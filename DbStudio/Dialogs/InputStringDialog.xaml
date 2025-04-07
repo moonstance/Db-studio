@@ -1,0 +1,40 @@
+﻿<Window x:Class="DbStudio.InputStringDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DbStudio"
+        mc:Ignorable="d"
+        ThemeMode="Dark"
+        Title="" Height="250" Width="350">
+  <Grid>
+    <!-- Create a dialog with ok and cancel buttons -->
+    <Grid.RowDefinitions>
+      <RowDefinition Height="*" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+
+    <TabControl Grid.Row="0" Margin="10" BorderThickness="1" BorderBrush="#555">
+      <TabItem Header="Input string">
+
+        <StackPanel Grid.Row="0" Margin="10">
+          <TextBlock Text="{Binding Heading}" />
+          <TextBox  Text="{Binding Value}" Margin="0,5,0,5" Width="300" HorizontalAlignment="Left"/>
+        </StackPanel>
+
+      </TabItem>
+    </TabControl>
+
+
+    <Grid Grid.Row="1" Margin="10" HorizontalAlignment="Right">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
+      <Button Grid.Column="0" Content="OK" Width="80" Margin="5" Click="OkButton_Click"
+              Background="{DynamicResource {x:Static SystemColors.AccentColorBrushKey}}"/>
+      <Button Grid.Column="1" Content="Cancel" Width="80" Margin="5" Click="CancelButton_Click"
+               />
+    </Grid>
+  </Grid>
+</Window>

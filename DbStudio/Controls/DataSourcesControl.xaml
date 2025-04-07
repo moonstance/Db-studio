@@ -1,0 +1,112 @@
+﻿<UserControl x:Class="DbStudio.DataSourcesControl"
+             x:Name="MyDataSourcesControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:DbStudio"
+             xmlns:shared="clr-namespace:DbStudio.Shared;assembly=DbStudio.Shared"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             mc:Ignorable="d"
+             d:DesignHeight="400" d:DesignWidth="300">
+  <Border BorderThickness="0.3" BorderBrush="White">
+    <Grid Margin="10">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <!-- Toolbar -->
+        <RowDefinition Height="*" />
+        <!-- TreeView -->
+      </Grid.RowDefinitions>
+
+      <!-- Toolbar with Add Button -->
+      <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,10">
+        <TextBlock Text="Datasources"  VerticalAlignment="Center" />
+        <Button x:Name="AddDataSourceButton" 
+                Click="AddDataSourceButton_Click" 
+                Padding="4"
+                Margin="20,0,0,0"
+                ToolTip="Add new datasource" HorizontalAlignment="Right">
+          <StackPanel Orientation="Horizontal">
+            <iconPacks:PackIconModern Kind="Add" Width="12" Height="12" VerticalAlignment="Center" />
+            <TextBlock Text="Add server..." Margin="5,0,0,0"/>
+          </StackPanel>
+        </Button>
+      </StackPanel>
+
+      <!-- TreeView for DataSources -->
+      <TreeView Grid.Row="1" BorderThickness="0.3" BorderBrush="Black"
+              ItemsSource="{Binding DataSources}"
+          SelectedItemChanged="TreeView_SelectedItemChanged">
+
+        <!-- Attach the double-click event on each TreeViewItem -->
+        <!--
+        <TreeView.ItemContainerStyle>
+          <Style TargetType="TreeViewItem">
+            <EventSetter Event="MouseDoubleClick" Handler="TreeViewItem_MouseDoubleClick"/>
+          </Style>
+        </TreeView.ItemContainerStyle>-->
+
+        <TreeView.ItemTemplate>
+          <HierarchicalDataTemplate DataType="{x:Type shared:DataSource}"  ItemsSource="{Binding Databases}">
+            <Border Tag="{Binding}" x:Name="myborder" BorderThickness="0.4">
+              <StackPanel Orientation="Horizontal">
+                <iconPacks:PackIconModern Kind="Server" Width="12" Height="12" VerticalAlignment="Center" />
+                <TextBlock Text="{Binding Url}" Padding="0,0,20,0" Margin="5,0,0,0">
+                  <TextBlock.ContextMenu>
+                    <ContextMenu>
+                      <MenuItem Header="Edit DataSource"
+                        Command="{Binding DataContext.EditDataSourceCommand, Source={x:Reference MyDataSourcesControl}}"
+                        CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                      <MenuItem Header="Remove DataSource"
+                        Command="{Binding DataContext.RemoveDataSourceCommand, Source={x:Reference MyDataSourcesControl}}"
+                        CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+
+                      <MenuItem Header="Refresh databases..."
+                        Command="{Binding DataContext.RefreshDatabasesCommand, Source={x:Reference MyDataSourcesControl}}"
+                        CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+
+                    </ContextMenu>
+                  </TextBlock.ContextMenu>
+                </TextBlock>
+              </StackPanel>
+
+            </Border>
+            <!-- Define how child items (databases) appear -->
+            <HierarchicalDataTemplate.ItemTemplate>
+              <DataTemplate>
+                <ContentControl>
+                  <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseDoubleClick">
+                      <i:InvokeCommandAction Command="{Binding DataContext.DatabaseDblClickCommand, RelativeSource={RelativeSource AncestorType=TreeView}}" 
+                                                   CommandParameter="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType=TreeViewItem}}"/>
+                    </i:EventTrigger>
+                  </i:Interaction.Triggers>
+                  
+                  <StackPanel Orientation="Horizontal">
+                    <StackPanel.ContextMenu>
+                      <ContextMenu>
+                        <MenuItem Header="New query..."
+                          Command="{Binding DataContext.NewQueryCommand, Source={x:Reference MyDataSourcesControl}}"
+                          CommandParameter="{Binding}"/>
+                        <MenuItem Header="Select custom domain assembly file (.dll)..."
+                          Command="{Binding DataContext.SetDomainAssemblyForDatabaseCommand, Source={x:Reference MyDataSourcesControl}}"
+                          CommandParameter="{Binding}"/>
+                      </ContextMenu>
+                    </StackPanel.ContextMenu>
+                    <iconPacks:PackIconModern Kind="Database" Width="12" Height="12" VerticalAlignment="Center" />
+                    <TextBlock Text="{Binding Name}" Padding="0,0,0,0" Margin="5,0,0,0">
+
+                    </TextBlock>
+                  </StackPanel>
+                </ContentControl>
+              </DataTemplate>
+            </HierarchicalDataTemplate.ItemTemplate>
+          </HierarchicalDataTemplate>
+
+        </TreeView.ItemTemplate>
+      </TreeView>
+
+    </Grid>
+  </Border>
+</UserControl>

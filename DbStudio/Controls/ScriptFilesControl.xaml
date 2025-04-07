@@ -1,0 +1,70 @@
+﻿<UserControl x:Class="DbStudio.ScriptFilesControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:shared="clr-namespace:DbStudio.Shared;assembly=DbStudio.Shared"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:local="clr-namespace:DbStudio"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="400">
+  <Border BorderThickness="0.3" BorderBrush="White">
+    <Grid Margin="10">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="*" />
+        <!-- TreeView -->
+      </Grid.RowDefinitions>
+
+      <TextBlock Grid.Row="0" Text="Script files" />
+
+      <TreeView Grid.Row="1" ItemsSource="{Binding ScriptGroups}">
+        <TreeView.ItemTemplate>
+          <HierarchicalDataTemplate ItemsSource="{Binding Scripts}">
+
+            <!-- Group Header (DbType) -->
+            <Border  BorderThickness="0.4">
+              <StackPanel Orientation="Horizontal">
+                <iconPacks:PackIconModern Kind="Database" Width="12" Height="12" VerticalAlignment="Center" />
+                <TextBlock Text="{Binding DisplayName}" Padding="0,0,20,0" Margin="5,0,0,0">
+                </TextBlock>
+              </StackPanel>
+
+            </Border>
+
+
+            <HierarchicalDataTemplate.ItemTemplate>
+              <DataTemplate>
+                <ContentControl>
+                  <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseDoubleClick">
+                      <i:InvokeCommandAction Command="{Binding DataContext.ScriptFileDblClickCommand, RelativeSource={RelativeSource AncestorType=TreeView}}"
+                                             CommandParameter="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType=TreeViewItem}}" />
+                    </i:EventTrigger>
+                  </i:Interaction.Triggers>
+
+                  <StackPanel Orientation="Horizontal">
+                    <StackPanel.ContextMenu>
+                      <ContextMenu>
+                        <MenuItem Header="Open in new tab"
+                          Command="{Binding DataContext.OpenScriptCommand, RelativeSource={RelativeSource AncestorType=TreeView}}"
+                          CommandParameter="{Binding}" />
+                        <MenuItem Header="Rename" />
+                        <MenuItem Header="Delete" />
+                      </ContextMenu>
+                    </StackPanel.ContextMenu>
+
+                    <iconPacks:PackIconModern Kind="LanguageCsharp" Width="12" Height="12" />
+                    <TextBlock Text="{Binding Name}" Margin="5,0,0,0" />
+                  </StackPanel>
+                </ContentControl>
+              </DataTemplate>
+            </HierarchicalDataTemplate.ItemTemplate>
+          </HierarchicalDataTemplate>
+        </TreeView.ItemTemplate>
+      </TreeView>
+
+    </Grid>
+  </Border>
+</UserControl>

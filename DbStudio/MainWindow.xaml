@@ -1,0 +1,92 @@
+﻿<Window x:Class="DbStudio.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DbStudio"
+        xmlns:editor="clr-namespace:RoslynPad.Editor;assembly=RoslynPad.Editor.Windows"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        mc:Ignorable="d"
+        ThemeMode="Dark"
+        Title="Db Studio" Height="1024" Width="1440"
+        Loaded="MainWindow_Loaded"
+        KeyDown="Window_KeyDown">
+
+  <Grid Margin="10">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+
+   
+    
+
+    <Grid Grid.Row="1" Margin="0">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
+
+      <StackPanel Grid.Column="0" Orientation="Vertical">
+        <local:DataSourcesControl  DatabaseDoubleClicked="DataSourcesControl_DatabaseDoubleClicked" />
+        <local:TemplatesControl ScriptTemplateDoubleClicked="TemplatesControl_ScriptTemplateDoubleClicked" />
+        <local:ScriptFilesControl ScriptFileDoubleClicked="scriptFilesControl_ScriptFileDoubleClicked" x:Name="scriptFilesControl" />
+      </StackPanel>
+
+      
+
+      <Border BorderBrush="White" BorderThickness="0.3" Grid.Column="1" Margin="10,0,0,0">
+        <TabControl Name="EditorTabControl"
+                    ItemsSource="{Binding QueryEditors}" >
+
+          <TabControl.ItemTemplate>
+            <DataTemplate>
+              <Border x:Name="Border" BorderBrush="White" BorderThickness="0.1, 0.1, 0.1, 0" CornerRadius="4,4,0,0">
+                <StackPanel Orientation="Horizontal" Margin="4,2">
+                <TextBlock Foreground="White" Text="{Binding DataContext.DocumentTitle, RelativeSource={RelativeSource AncestorType=TabItem}}" VerticalAlignment="Center"/>
+                <Button
+                      Command="{Binding DataContext.CloseTabCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                      CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=TabItem}}" 
+                      Width="20" Height="20"
+                      Padding="0" Margin="100,0,0,0"
+                      VerticalAlignment="Center"
+                      Background="Transparent"
+                      BorderThickness="1"
+                      ToolTip="Close Tab">
+                  <iconPacks:PackIconModern Kind="Close" Width="12" Height="12" VerticalAlignment="Center" />
+                </Button>
+              </StackPanel>
+              </Border>
+            </DataTemplate>
+          </TabControl.ItemTemplate>
+
+          <!-- Content template: display the QueryEditor itself -->
+          <TabControl.ContentTemplate>
+            <DataTemplate>
+              <ContentPresenter Content="{Binding}"/>
+            </DataTemplate>
+          </TabControl.ContentTemplate>
+        </TabControl>
+      </Border>
+    </Grid>
+
+    <StatusBar Grid.Row="2" HorizontalAlignment="Stretch">
+      <StatusBarItem Margin="5,0,5,0" Padding="0">
+        <TextBlock>Ctrl+N -> New tab</TextBlock>
+      </StatusBarItem>
+      <StatusBarItem Margin="5,0,5,0" Padding="0">
+        <TextBlock>Ctrl+Enter -> Execute script</TextBlock>
+      </StatusBarItem>
+      <StatusBarItem Margin="5,0,5,0" Padding="0">
+        <TextBlock>Ctrl+S -> Save script</TextBlock>
+      </StatusBarItem>
+      <StatusBarItem Margin="5,0,5,0" Padding="0">
+        <TextBlock>Ctrl+O -> Open script</TextBlock>
+      </StatusBarItem>
+    </StatusBar>
+
+  </Grid>
+
+  
+</Window>

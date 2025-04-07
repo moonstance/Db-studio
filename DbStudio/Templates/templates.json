@@ -1,0 +1,14 @@
+[
+  {
+    "displayName": "Empty RavenDB Session",
+    "description": "Basic session with query placeholder.",
+    "filename": "EmptySession.csx",
+    "dbType": "RavenDb"
+  },
+  {
+    "displayName": "Count Documents",
+    "description": "Counts all documents in a specific collection.",
+    "filename": "CountDocuments.csx",
+    "dbType": "RavenDb"
+  }
+]
