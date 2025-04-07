@@ -1,6 +1,6 @@
 ﻿using System.Windows.Input;
 
-namespace DbStudio;
+namespace DbStudio.Common;
 
 // Simple RelayCommand implementation
 public class RelayCommand : ICommand {

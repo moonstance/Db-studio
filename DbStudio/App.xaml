@@ -2,6 +2,7 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:DbStudio"
+             xmlns:common="clr-namespace:DbStudio.Common"
              xmlns:codeFixes="clr-namespace:RoslynPad.Roslyn.CodeFixes;assembly=RoslynPad.Roslyn"
              xmlns:codeActions="clr-namespace:Microsoft.CodeAnalysis.CodeActions;assembly=Microsoft.CodeAnalysis.Workspaces"
              StartupUri="MainWindow.xaml"
@@ -24,7 +25,7 @@
     </HierarchicalDataTemplate>
 
     <HierarchicalDataTemplate DataType="{x:Type codeFixes:CodeFix}"
-                                  ItemsSource="{Binding Action, Mode=OneTime, Converter={ local:CodeActionsConverter}}">
+                                  ItemsSource="{Binding Action, Mode=OneTime, Converter={ common:CodeActionsConverter}}">
       <ContentPresenter Content="{Binding Action, Mode=OneTime}" />
     </HierarchicalDataTemplate>
 

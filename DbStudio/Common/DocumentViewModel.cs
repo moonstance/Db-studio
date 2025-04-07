@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis;
 using RoslynPad.Editor;
 using RoslynPad.Roslyn;
 
-namespace DbStudio {
+namespace DbStudio.Common {
   internal class DocumentViewModel : INotifyPropertyChanged {
     private string _title;
     private string _text;

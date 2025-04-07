@@ -8,9 +8,8 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Diagnostics;
 using DbStudio.Shared.ScriptTemplates;
-using Microsoft.Win32;
-using System.IO;
 using DbStudio.Shared.ScriptFiles;
+using DbStudio.Common;
 
 namespace DbStudio;
 
@@ -93,11 +92,12 @@ public partial class MainWindow : Window, INotifyPropertyChanged {
     }
   }
 
-  private void AddQueryEditor(RavenStore ravenStore) {
+  private QueryEditor AddQueryEditor(RavenStore ravenStore) {
     var queryEditor = new QueryEditor(ravenStore);
     _queryEditors.Add(queryEditor);
 
     EditorTabControl.SelectedIndex = _queryEditors.Count - 1;
+    return queryEditor;
   }
 
   private async void Window_KeyDown(object sender, KeyEventArgs e) {
@@ -143,17 +143,36 @@ public partial class MainWindow : Window, INotifyPropertyChanged {
   }
 
   private void TemplatesControl_ScriptTemplateDoubleClicked(object sender, Shared.ScriptTemplates.ScriptTemplate e) {
-    UseSriptInSelectedEditor(TemplateService.ReadTemplate(e));
+    UseScriptInSelectedEditor(TemplateService.ReadTemplate(e));
   }
 
-  private void UseSriptInSelectedEditor(string scriptContent) {
+  private void UseScriptInSelectedEditor(string scriptContent) {
     var selectedEditor = EditorTabControl.SelectedItem as QueryEditor;
     if (selectedEditor != null) {
       selectedEditor.SetEditorText(scriptContent);
     }
   }
 
-  private void scriptFilesControl_ScriptFileDoubleClicked(object sender, Shared.ScriptFiles.ScriptFile e) {
-    UseSriptInSelectedEditor(ScriptFileService.ReadScriptFile(e));
+  //private void scriptFilesControl_ScriptFileDoubleClicked(object sender, Shared.ScriptFiles.ScriptFile e) {
+  //  UseScriptInSelectedEditor(ScriptFileService.ReadScriptFile(e));
+  //}
+
+  private void scriptFilesControl_ScriptFileDoubleClicked(object sender, OpenScriptFileArg e) {
+    OpenScriptFile(e);
+  }
+
+  private void OpenScriptFile(OpenScriptFileArg openScriptFileArg) {
+    if (!openScriptFileArg.OpenInNewTab) {
+      UseScriptInSelectedEditor(ScriptFileService.ReadScriptFile(openScriptFileArg.ScriptFile));
+    }
+    else {
+      var selectedEditor = EditorTabControl.SelectedItem as QueryEditor;
+      if (selectedEditor != null) {
+        // create a new editor with the same Ravenstore from the current selected one.
+        var selectedEditorStore = selectedEditor.RavenStore;
+        var newEditor = AddQueryEditor(selectedEditorStore);
+        newEditor.SetEditorText(ScriptFileService.ReadScriptFile(openScriptFileArg.ScriptFile));
+      }
+    }
   }
 }

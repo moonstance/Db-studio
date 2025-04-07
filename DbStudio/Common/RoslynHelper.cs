@@ -4,7 +4,7 @@ using RoslynPad.Roslyn;
 using System.Collections.Immutable;
 using System.Reflection;
 
-namespace DbStudio {
+namespace DbStudio.Common {
   public static class RoslynHelper {
     private static RoslynHost _host;
 

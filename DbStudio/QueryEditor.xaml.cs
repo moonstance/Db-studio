@@ -1,4 +1,5 @@
-﻿using DbStudio.Shared;
+﻿using DbStudio.Common;
+using DbStudio.Shared;
 using DbStudio.Shared.ScriptFiles;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
@@ -12,7 +13,6 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
 
 namespace DbStudio;
 

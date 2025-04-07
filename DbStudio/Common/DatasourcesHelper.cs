@@ -2,7 +2,7 @@
 using DbStudio.Shared;
 using Newtonsoft.Json;
 
-namespace DbStudio;
+namespace DbStudio.Common;
 
 public static class DatasourcesHelper {
   private static readonly string AppDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Moonstance", "DbStudio");

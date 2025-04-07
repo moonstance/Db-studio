@@ -1,4 +1,5 @@
-﻿using DbStudio.Shared;
+﻿using DbStudio.Common;
+using DbStudio.Shared;
 using DbStudio.Shared.ScriptTemplates;
 using System.Collections.ObjectModel;
 using System.Windows.Controls;

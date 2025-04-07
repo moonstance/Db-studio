@@ -100,4 +100,18 @@ public class ScriptFileService {
 
     return scripts;
   }
+
+  public static DeleteResult Delete(ScriptFile scriptfile) {
+    try {
+      File.Delete(scriptfile.FullPath);
+      return new DeleteResult() { Success = true };
+    } catch (Exception ex) {
+      return new DeleteResult() { Success = false, ErrorMessage = ex.Message };
+    }
+  }
+}
+
+public class DeleteResult {
+  public bool Success { get; set; }
+  public string? ErrorMessage { get; set; }
 }

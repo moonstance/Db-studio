@@ -1,15 +1,14 @@
-﻿using DbStudio.Shared;
+﻿using DbStudio.Common;
+using DbStudio.Shared;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Reflection;
-using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
 
 namespace DbStudio;
 /// <summary>

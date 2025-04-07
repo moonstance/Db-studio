@@ -1,6 +1,7 @@
-﻿using DbStudio.Shared.ScriptFiles;
-using DbStudio.Shared.ScriptTemplates;
+﻿using DbStudio.Common;
+using DbStudio.Shared.ScriptFiles;
 using System.Collections.ObjectModel;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -12,7 +13,10 @@ namespace DbStudio {
 
     public ObservableCollection<ScriptGroup> ScriptGroups { get; set; }
     public ICommand ScriptFileDblClickCommand { get; }
-    public event EventHandler<ScriptFile>? ScriptFileDoubleClicked;
+    public ICommand OpenNewScriptCommand { get; }
+    public ICommand DeleteScriptCommand { get; }
+
+    public event EventHandler<OpenScriptFileArg>? ScriptFileDoubleClicked;
 
     public ScriptFilesControl() {
       InitializeComponent();
@@ -20,6 +24,8 @@ namespace DbStudio {
       LoadFiles();
 
       ScriptFileDblClickCommand = new RelayCommand(parameter => ScriptFileDblClickCommandHandler(parameter));
+      OpenNewScriptCommand = new RelayCommand(parameter => OpenNewScriptCommandHandler(parameter));
+      DeleteScriptCommand = new RelayCommand(parameter => DeleteScriptCommandHandler(parameter));
 
       this.DataContext = this;
     }
@@ -39,13 +45,32 @@ namespace DbStudio {
 
     private void ScriptFileDblClickCommandHandler(object parameter) {
       if (parameter is ScriptFile scriptfile) {
-        InvokeUseScriptFile(scriptfile);
+        InvokeUseScriptFile(scriptfile, false);
       }
     }
 
-    private void InvokeUseScriptFile(ScriptFile scriptfile) {
+    private void OpenNewScriptCommandHandler(object parameter) {
+      if (parameter is ScriptFile scriptfile) {
+        InvokeUseScriptFile(scriptfile, true);
+      }
+    }
 
-      ScriptFileDoubleClicked?.Invoke(this, scriptfile);
+    private void DeleteScriptCommandHandler(object parameter) {
+      if (parameter is ScriptFile scriptfile) {
+        var result = ScriptFileService.Delete(scriptfile);
+        if (!result.Success) {
+          MessageBox.Show("Error trying to delete script file. " + result.ErrorMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+      }
+    }
+
+    private void InvokeUseScriptFile(ScriptFile scriptfile, bool openInNewTab) {
+
+      ScriptFileDoubleClicked?.Invoke(this, 
+        new OpenScriptFileArg() { 
+          ScriptFile = scriptfile,
+          OpenInNewTab = openInNewTab
+        });
     }
 
   }
