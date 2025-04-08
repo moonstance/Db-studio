@@ -46,7 +46,10 @@ public partial class MainWindow : Window, INotifyPropertyChanged {
     // Set the DataContext for the window so that {Binding QueryEditors} works.
     DataContext = this;
 
-    //AddNewQueryEditorTab();
+
+    ScrollViewerFix.AttachMouseWheelSupport(ctrlDatasources, MyScrollViewer);
+    ScrollViewerFix.AttachMouseWheelSupport(ctrlTemplates, MyScrollViewer);
+    ScrollViewerFix.AttachMouseWheelSupport(scriptFilesControl, MyScrollViewer);
 
 
     // Define CloseTabCommand
@@ -93,10 +96,15 @@ public partial class MainWindow : Window, INotifyPropertyChanged {
   }
 
   private QueryEditor AddQueryEditor(RavenStore ravenStore) {
+    Mouse.OverrideCursor = Cursors.Wait;
+
     var queryEditor = new QueryEditor(ravenStore);
     _queryEditors.Add(queryEditor);
 
     EditorTabControl.SelectedIndex = _queryEditors.Count - 1;
+
+    Mouse.OverrideCursor = null;
+
     return queryEditor;
   }
 
@@ -174,5 +182,21 @@ public partial class MainWindow : Window, INotifyPropertyChanged {
         newEditor.SetEditorText(ScriptFileService.ReadScriptFile(openScriptFileArg.ScriptFile));
       }
     }
+  }
+}
+
+public static class ScrollViewerFix {
+  public static void AttachMouseWheelSupport(FrameworkElement child, ScrollViewer scrollViewer) {
+    child.PreviewMouseWheel += (sender, e) =>
+    {
+      if (!e.Handled) {
+        // Raise event manually on ScrollViewer
+        var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta) {
+          RoutedEvent = UIElement.MouseWheelEvent,
+          Source = sender
+        };
+        scrollViewer.RaiseEvent(eventArg);
+      }
+    };
   }
 }

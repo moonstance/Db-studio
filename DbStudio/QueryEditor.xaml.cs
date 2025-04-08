@@ -1,8 +1,10 @@
 ﻿using DbStudio.Common;
 using DbStudio.Shared;
 using DbStudio.Shared.ScriptFiles;
+using DbStudio.Shared.ScriptTemplates;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
+using Microsoft.CodeAnalysis.Differencing;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.Win32;
 using Newtonsoft.Json;
@@ -13,6 +15,7 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Shapes;
 
 namespace DbStudio;
 
@@ -56,6 +59,14 @@ public partial class QueryEditor : UserControl, INotifyPropertyChanged {
 
     txtConnectedDatabase.Text = _ravenStore.Database.Name;
     txtConnectedServer.Text = _ravenStore.Url;
+    txtDomainAssembly.Text = _ravenStore.DomainAssembly != null ? _ravenStore.DomainAssembly.FullName : "[no domain assembly loaded]";
+
+    CodeEditor.TextArea.DefaultInputHandler.AddBinding(
+      new RoutedCommand(),
+      ModifierKeys.Control | ModifierKeys.Shift,
+      Key.C,
+      (sender, e) => CommentSelection()
+      );
   }
 
   private async void OnItemLoaded(object sender, EventArgs e) {
@@ -87,14 +98,27 @@ using (var session = RavenHelper.GetSession(SelectedRavenStore))
     return result;
 }}
 
-
 ";
 
-    documentText = $@"// Start typing here, or select a template/script from the left panel.
+    // try and find the startup template
+    var startTemplate = TemplateService.GetStartupTemplate(DbType.RavenDb); // TODO: create a Database interface IDatabase to use in this class instead of _ravenStore
+    if (startTemplate != null) {
+      _isLoading = true;
+      documentText = TemplateService.ReadTemplate(startTemplate);
+      _document.FullPathAndName = TemplateService.GetTemplateFullPath(startTemplate);
+      DocumentTitle = "[T] " + startTemplate.DisplayName;
+      
+    }
+
+    if (string.IsNullOrEmpty(documentText)) {
+      documentText = $@"// Start typing here, or select a template/script from the left panel.
 // Tip: Use Shift+Ctrl+T to open the Templates list quickly.
 ";
+    }
 
     await editor.InitializeAsync(_document.Host, new ClassificationHighlightColors(), workingDirectory, documentText, SourceCodeKind.Script);
+
+    _isLoading = false;
   }
 
   private void ResultDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
@@ -116,15 +140,6 @@ using (var session = RavenHelper.GetSession(SelectedRavenStore))
   }
 
 
-
-  //private void FontSizeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-  //  if (CodeEditor != null && FontSizeComboBox.SelectedItem is ComboBoxItem item &&
-  //      double.TryParse(item.Content.ToString(), out double newFontSize)) {
-  //    CodeEditor.FontSize = newFontSize;
-  //  }
-  //}
-
-
   private void SaveDocument_Click(object sender, RoutedEventArgs e) {
     SaveCode();
     
@@ -141,7 +156,8 @@ using (var session = RavenHelper.GetSession(SelectedRavenStore))
 
       var result = dlg.ShowDialog();
       if (result ?? false && !string.IsNullOrEmpty(dlg.Value)) {
-        ScriptFileService.SaveScript(CodeEditor.Text, dlg.Value, DbType.RavenDb);
+        var script = ScriptFileService.SaveScript(CodeEditor.Text, dlg.Value, DbType.RavenDb);
+        DocumentTitle = script.Name;
       }
     }
     else {
@@ -315,4 +331,46 @@ using (var session = RavenHelper.GetSession(SelectedRavenStore))
     gridStatistics.DataContext = null;
     ResultDataGrid.DataContext = null;
   }
+
+  private void CommentSelection() {
+    var editor = CodeEditor;
+    var document = editor.Document;
+    var selectedText = editor.TextArea.Selection;
+
+    if (selectedText.IsEmpty)
+      return;
+
+    var startLine = document.GetLineByOffset(selectedText.SurroundingSegment.Offset);
+    var endLine = document.GetLineByOffset(selectedText.SurroundingSegment.EndOffset);
+    bool isComment = true; // otherwise it's an uncomment.
+    string text = document.GetText(startLine);
+    if (text.TrimStart().StartsWith("//")) {
+      isComment = false;
+    }
+
+
+    using (document.RunUpdate()) {
+      for (var line = startLine; line != null && line.Offset <= endLine.Offset; line = line.NextLine) {
+        var lineStart = line.Offset;
+        if (!isComment) {
+          string lineText = document.GetText(line);
+          // Find the actual offset of `//` within the line (if there’s leading whitespace)
+          int commentOffset = lineText.IndexOf("//", StringComparison.Ordinal);
+          
+          if (commentOffset > -1) {
+            int length = 2;
+            if (lineText.Substring(commentOffset+2).StartsWith(" ")) {
+              length++;
+            }
+            document.Remove(line.Offset + commentOffset, length);
+          }
+        }
+        else {
+          document.Insert(line.Offset, "// ");
+        }
+
+      }
+    }
+  }
+
 }

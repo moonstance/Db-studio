@@ -21,7 +21,9 @@ public class TemplateService {
 
     try {
       var json = File.ReadAllText(TemplatesPath);
-      return JsonSerializer.Deserialize<List<ScriptTemplate>>(json, SerializerOptions) ?? [];
+      var templates = JsonSerializer.Deserialize<List<ScriptTemplate>>(json, SerializerOptions) ?? [];
+
+      return templates;
     }
     catch (Exception ex) {
       // TODO: optionally log or show message to user
@@ -40,12 +42,22 @@ public class TemplateService {
   }
 
   public static string ReadTemplate(ScriptTemplate template) {
-    var dir = Path.GetDirectoryName(TemplatesPath)!;
-    var filePath = Path.Combine(dir, template.DbType.ToString(), template.Filename);
+    var filePath = GetTemplateFullPath(template);
+
     if (File.Exists(filePath)) {
       return File.ReadAllText(filePath);
     }
 
     return "//Could not find file at " + filePath;
+  }
+
+  public static ScriptTemplate? GetStartupTemplate(DbType dbType) {
+    var templates = LoadTemplates();
+    return templates.SingleOrDefault(x => x.DbType == dbType && x.IsStartup);
+  }
+
+  public static string GetTemplateFullPath(ScriptTemplate template) {
+    var dir = Path.GetDirectoryName(TemplatesPath)!;
+    return Path.Combine(dir, template.DbType.ToString(), template.Filename);
   }
 }

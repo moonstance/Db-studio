@@ -51,8 +51,8 @@
             <TextBlock x:Name="txtConnectedDatabase" Text="database" Margin="5,0,5,0" FontWeight="Bold" />
             <TextBlock Text="on" Margin="0,0,5,0"/>
             <TextBlock x:Name="txtConnectedServer" Text="server" FontWeight="Bold" />
+            <TextBlock x:Name="txtDomainAssembly" Margin="20,0,0,0" />
 
-            
           </StackPanel>
           
         </StatusBarItem>
@@ -98,9 +98,11 @@
 
             </DataGrid>
           </TabItem>
+          
           <TabItem Header="Raw">
-            <TextBlock x:Name="txtQueryRaw" />
+            <TextBox IsReadOnly="True" x:Name="txtQueryRaw" />
           </TabItem>
+          
           <TabItem Header="Statistics">
             <Grid x:Name="gridStatistics">
               <Grid.ColumnDefinitions>

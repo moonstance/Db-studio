@@ -28,13 +28,26 @@
         <ColumnDefinition Width="*" />
       </Grid.ColumnDefinitions>
 
-      <StackPanel Grid.Column="0" Orientation="Vertical">
-        <local:DataSourcesControl  DatabaseDoubleClicked="DataSourcesControl_DatabaseDoubleClicked" />
-        <local:TemplatesControl ScriptTemplateDoubleClicked="TemplatesControl_ScriptTemplateDoubleClicked" />
-        <local:ScriptFilesControl ScriptFileDoubleClicked="scriptFilesControl_ScriptFileDoubleClicked" x:Name="scriptFilesControl" />
-      </StackPanel>
+      <ScrollViewer x:Name="MyScrollViewer" Grid.Column="0"
+              VerticalScrollBarVisibility="Auto"
+              HorizontalScrollBarVisibility="Disabled"
+              CanContentScroll="False"
+              Margin="0">
 
-      
+        <Grid>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+          </Grid.RowDefinitions>
+
+          <local:DataSourcesControl x:Name="ctrlDatasources"  Grid.Row="0" Focusable="False"  DatabaseDoubleClicked="DataSourcesControl_DatabaseDoubleClicked" />
+          <local:TemplatesControl x:Name="ctrlTemplates" Grid.Row="1" Focusable="False" ScriptTemplateDoubleClicked="TemplatesControl_ScriptTemplateDoubleClicked" />
+          <local:ScriptFilesControl Grid.Row="2" Focusable="False" ScriptFileDoubleClicked="scriptFilesControl_ScriptFileDoubleClicked" x:Name="scriptFilesControl" />
+        </Grid>
+
+      </ScrollViewer>
+
 
       <Border BorderBrush="White" BorderThickness="0.3" Grid.Column="1" Margin="10,0,0,0">
         <TabControl Name="EditorTabControl"
@@ -83,6 +96,9 @@
       </StatusBarItem>
       <StatusBarItem Margin="5,0,5,0" Padding="0">
         <TextBlock>Ctrl+O -> Open script</TextBlock>
+      </StatusBarItem>
+      <StatusBarItem Margin="5,0,5,0" Padding="0">
+        <TextBlock>Ctrl+Shift+C -> Toggle comments in the editor</TextBlock>
       </StatusBarItem>
     </StatusBar>
 

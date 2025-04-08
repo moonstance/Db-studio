@@ -11,7 +11,7 @@ namespace DbStudio {
   /// </summary>
   public partial class ScriptFilesControl : UserControl {
 
-    public ObservableCollection<ScriptGroup> ScriptGroups { get; set; }
+    public ObservableCollection<ScriptGroup> ScriptGroups { get; set; } = new();
     public ICommand ScriptFileDblClickCommand { get; }
     public ICommand OpenNewScriptCommand { get; }
     public ICommand DeleteScriptCommand { get; }
@@ -40,7 +40,10 @@ namespace DbStudio {
             Scripts = new ObservableCollection<ScriptFile>(g.OrderBy(f => f.Name))
           });
 
-      ScriptGroups = new ObservableCollection<ScriptGroup>(groups);
+      ScriptGroups.Clear(); // = new ObservableCollection<ScriptGroup>(groups);
+      foreach (var group in groups) { 
+        ScriptGroups.Add(group);
+      }
     }
 
     private void ScriptFileDblClickCommandHandler(object parameter) {
@@ -60,6 +63,8 @@ namespace DbStudio {
         var result = ScriptFileService.Delete(scriptfile);
         if (!result.Success) {
           MessageBox.Show("Error trying to delete script file. " + result.ErrorMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        } else {
+          LoadFiles();
         }
       }
     }
