@@ -40,9 +40,7 @@ jobs:
       run: Compress-Archive -Path ${{ env.Output_Dir }}/DbStudio/* -DestinationPath DbStudio.zip
 
     - name: Create GitHub Release
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2
       with:
         files: DbStudio.zip
         token: ${{ secrets.GITHUB_TOKEN }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
