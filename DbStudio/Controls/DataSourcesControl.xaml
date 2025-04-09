@@ -35,7 +35,7 @@
       </StackPanel>
 
       <!-- TreeView for DataSources -->
-      <TreeView Grid.Row="1" BorderThickness="0.3" BorderBrush="Black"
+      <TreeView x:Name="trvDataSources" Grid.Row="1" BorderThickness="0.3" BorderBrush="Black" 
               ItemsSource="{Binding DataSources}"
           SelectedItemChanged="TreeView_SelectedItemChanged">
 

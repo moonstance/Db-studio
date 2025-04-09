@@ -44,6 +44,7 @@ public partial class DataSourcesControl : UserControl, INotifyPropertyChanged {
 
     DataContext = this;
 
+    //ExpandAll(trvDataSources);
 
     RemoveDataSourceCommand = new RelayCommand(parameter => {
       RemoveDataSourceCommandHandler(parameter);
@@ -205,5 +206,34 @@ public partial class DataSourcesControl : UserControl, INotifyPropertyChanged {
       current = VisualTreeHelper.GetParent(current);
     }
     return null;
+  }
+
+  public void ExpandAll(TreeView treeView) {
+    foreach (var item in treeView.Items) {
+      if (item is TreeViewItem)
+        ExpandAll((TreeViewItem)item);
+    }
+  }
+
+  public void ExpandAll(TreeViewItem treeViewItem, bool isExpanded = true) {
+    var stack = new Stack<TreeViewItem>(treeViewItem.Items.Cast<TreeViewItem>());
+    while (stack.Count > 0) {
+      TreeViewItem item = stack.Pop();
+
+      foreach (var child in item.Items) {
+        var childContainer = child as TreeViewItem;
+        if (childContainer == null) {
+          childContainer = item.ItemContainerGenerator.ContainerFromItem(child) as TreeViewItem;
+        }
+
+        stack.Push(childContainer);
+      }
+
+      item.IsExpanded = isExpanded;
+    }
+  }
+
+  private void CollapseAll(TreeViewItem treeViewItem) {
+    ExpandAll(treeViewItem, false);
   }
 }
