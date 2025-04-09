@@ -16,6 +16,19 @@ public static class RavenHelper {
 
 
   public static IDocumentStore GetDocumentStore(RavenStore ravenStore) {
+    
+    // If no database is set we return a new store every time
+    if (ravenStore.Database == null) {
+      // return store without database
+      var store = new DocumentStore() {
+        Urls = new[] { ravenStore.Url }
+      };
+
+      store.Initialize();
+      return store;
+    }
+    
+    
     string key = $"{ravenStore.Url}-{ravenStore.Database.Name}";
 
     if (_stores.ContainsKey(key)) { 
