@@ -1,6 +1,6 @@
 ﻿namespace DbStudio.Shared.Github.Models;
 
-public record Release(string Url, string ZipBall_Url, string Id, string Name, string TagName) {
+public record Release(string Url, int Id, string Name, string TagName) {
   public List<Asset> Assets { get; set; } = new();
 }
 
