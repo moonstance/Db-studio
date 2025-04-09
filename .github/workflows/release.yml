@@ -43,5 +43,6 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         files: DbStudio.zip
+        token: ${{ secrets.GITHUB_TOKEN }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
