@@ -7,7 +7,7 @@
              xmlns:codeActions="clr-namespace:Microsoft.CodeAnalysis.CodeActions;assembly=Microsoft.CodeAnalysis.Workspaces"
              StartupUri="MainWindow.xaml"
              ThemeMode="Light">
-    <Application.Resources>
+  <Application.Resources>
     <DrawingImage x:Key="Bulb">
       <DrawingImage.Drawing>
         <GeometryDrawing Brush="Gold">
@@ -38,5 +38,8 @@
         <ResourceDictionary Source="pack://application:,,,/PresentationFramework.Fluent;component/Themes/Fluent.xaml" />
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
+
+    <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+
   </Application.Resources>
 </Application>

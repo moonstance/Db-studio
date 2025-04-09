@@ -9,6 +9,7 @@
     <Title>DbStudio</Title>
     <ApplicationIcon>Assets\DbStudio.ico</ApplicationIcon>
     <PackageIcon>Assets\DbStudio.png</PackageIcon>
+		<Version>0.1.0.0</Version>
   </PropertyGroup>
 
   <ItemGroup>

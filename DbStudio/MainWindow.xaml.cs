@@ -10,6 +10,9 @@ using System.Diagnostics;
 using DbStudio.Shared.ScriptTemplates;
 using DbStudio.Shared.ScriptFiles;
 using DbStudio.Common;
+using System.Reflection;
+using DbStudio.Shared.Github;
+using DbStudio.Shared.Github.Models;
 
 namespace DbStudio;
 
@@ -17,18 +20,28 @@ namespace DbStudio;
 /// Interaction logic for MainWindow.xaml
 /// </summary>
 public partial class MainWindow : Window, INotifyPropertyChanged {
-  private readonly ObservableCollection<DocumentViewModel> _documents;
+  public Version CurrentVersion => Assembly.GetEntryAssembly()!.GetName().Version!;
+  public ICommand CloseTabCommand { get; }
+  public event PropertyChangedEventHandler? PropertyChanged;
+
+
+  
+  private bool _updateAvailable = false;
+  public bool UpdateAvailable {
+    get => _updateAvailable;
+    set { _updateAvailable = value; OnPropertyChanged(); }
+  }
 
   private ObservableCollection<QueryEditor> _queryEditors;
-
   public ObservableCollection<QueryEditor> QueryEditors {
     get => _queryEditors;
     set { _queryEditors = value; OnPropertyChanged(); }
   }
 
 
-  public event PropertyChangedEventHandler? PropertyChanged;
-  public ICommand CloseTabCommand { get; }
+
+  private readonly ObservableCollection<DocumentViewModel> _documents;
+  private Release? LatestVersionIdOnGithub = null;
 
   protected void OnPropertyChanged([CallerMemberName] string? propertyName = null) {
     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -62,6 +75,14 @@ public partial class MainWindow : Window, INotifyPropertyChanged {
         Debug.WriteLine("CloseTabCommand received a null or invalid parameter.");
       }
     });
+
+    Loaded += (s, e) => {
+      Task.Run( () => CheckForUpdatesAsync() );
+    };
+
+
+
+
 
   }
 
@@ -181,6 +202,54 @@ public partial class MainWindow : Window, INotifyPropertyChanged {
         var newEditor = AddQueryEditor(selectedEditorStore);
         newEditor.SetEditorText(ScriptFileService.ReadScriptFile(openScriptFileArg.ScriptFile));
       }
+    }
+  }
+
+  private async void btnInstallNewVersion_Click(object sender, RoutedEventArgs e) {
+
+    if (LatestVersionIdOnGithub == null)
+      return;
+
+    // Download the new version
+    var zipPath = await GitHubService.DownloadRelease(LatestVersionIdOnGithub);
+
+    // start new process for Updater.exe
+    Process.Start(new ProcessStartInfo {
+      FileName = "Updater.exe",
+      Arguments = $"\"{zipPath}\" \"{AppDomain.CurrentDomain.BaseDirectory}\"",
+      UseShellExecute = false,
+    });
+
+    // kill this application
+    Application.Current.Shutdown();
+
+    
+  }
+
+  private async Task CheckForUpdatesAsync() {
+    try {
+
+      await Task.Delay(3000);
+
+      // This runs off the UI thread
+      LatestVersionIdOnGithub = await GitHubService.GetLatestVersionAsync();
+
+      if (LatestVersionIdOnGithub == null) {
+        return;
+      }
+
+      // parse
+      var latestVersion = new Version(LatestVersionIdOnGithub.TagName.Replace("v", ""));
+
+      if (latestVersion > CurrentVersion) {
+        Dispatcher.Invoke(() =>
+        {
+          UpdateAvailable = true;
+        });
+      }
+    }
+    catch (Exception ex) {
+      Debug.WriteLine("Update check failed: " + ex.Message);
     }
   }
 }
