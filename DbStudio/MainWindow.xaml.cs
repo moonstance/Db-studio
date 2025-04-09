@@ -210,18 +210,25 @@ public partial class MainWindow : Window, INotifyPropertyChanged {
     if (LatestVersionIdOnGithub == null)
       return;
 
-    // Download the new version
-    var zipPath = await GitHubService.DownloadRelease(LatestVersionIdOnGithub);
 
-    // start new process for Updater.exe
-    Process.Start(new ProcessStartInfo {
-      FileName = "Updater.exe",
-      Arguments = $"\"{zipPath}\" \"{AppDomain.CurrentDomain.BaseDirectory}\"",
-      UseShellExecute = false,
-    });
+    try {
+      // Download the new version
+      var zipPath = await GitHubService.DownloadRelease(LatestVersionIdOnGithub);
 
-    // kill this application
-    Application.Current.Shutdown();
+      // start new process for Updater.exe
+      Process.Start(new ProcessStartInfo {
+        FileName = "Updater.exe",
+        Arguments = $"\"{zipPath}\" \"{AppDomain.CurrentDomain.BaseDirectory}\"",
+        UseShellExecute = false,
+      });
+
+      // kill this application
+      Application.Current.Shutdown();
+
+    }
+    catch (Exception ex) { 
+      // TODO: Log it
+    }
 
     
   }
@@ -239,7 +246,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged {
       }
 
       // parse
-      var latestVersion = new Version(LatestVersionIdOnGithub.TagName.Replace("v", ""));
+      var latestVersion = new Version(LatestVersionIdOnGithub.Name.Replace("v", ""));
 
       if (latestVersion > CurrentVersion) {
         Dispatcher.Invoke(() =>
