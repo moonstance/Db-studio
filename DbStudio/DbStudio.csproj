@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -9,7 +9,7 @@
     <Title>DbStudio</Title>
     <ApplicationIcon>Assets\DbStudio.ico</ApplicationIcon>
     <PackageIcon>Assets\DbStudio.png</PackageIcon>
-		<Version>0.2.2</Version>
+		<Version>0.2.3</Version>
   </PropertyGroup>
 
   <ItemGroup>

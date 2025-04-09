@@ -1,10 +1,10 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-		<Version>0.2.2</Version>
+		<Version>0.2.3</Version>
   </PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="RavenDB.Client" Version="5.4.206" />
