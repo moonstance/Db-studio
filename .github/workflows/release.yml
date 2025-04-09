@@ -1,0 +1,47 @@
+name: Build and Release DbStudio
+
+on:
+  push:
+    tags:
+      - 'v*.*.*' # Trigger only on version tags like v1.0.0
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    env:
+      Solution_Name: DbStudio.sln
+      DbStudio_Project: DbStudio/DbStudio.csproj
+      Updater_Project: DbStudio.Updater/DbStudio.Updater.csproj
+      Output_Dir: output
+
+    steps:
+    - name: Checkout source
+      uses: actions/checkout@v3
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '9.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore ${{ env.Solution_Name }}
+
+    - name: Build projects
+      run: dotnet build ${{ env.Solution_Name }} --configuration Release --no-restore
+
+    - name: Publish DbStudio
+      run: dotnet publish ${{ env.DbStudio_Project }} --configuration Release --output ${{ env.Output_Dir }}/DbStudio
+
+    - name: Publish DbStudio.Updater
+      run: dotnet publish ${{ env.Updater_Project }} --configuration Release --output ${{ env.Output_Dir }}/DbStudio
+
+    - name: Zip Release
+      run: Compress-Archive -Path ${{ env.Output_Dir }}/DbStudio/* -DestinationPath DbStudio.zip
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: DbStudio.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
