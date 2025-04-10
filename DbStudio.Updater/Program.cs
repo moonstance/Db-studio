@@ -41,9 +41,13 @@ internal class Program {
 
     Console.WriteLine($"Updater started. Zip: {zipPath}, Target: {targetPath}");
 
-    await WaitForDbStudioToExit(targetPath);
+    var waitResult = await WaitForDbStudioToExit(targetPath);
+    _logger.Information("Waiting result: {waiting}", waitResult);
+
     ExtractZipToTempAndReplace(zipPath, targetPath);
     LaunchDbStudio(targetPath);
+
+    await Task.Delay(1500);
 
     return 0;
   }
