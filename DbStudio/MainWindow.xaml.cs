@@ -220,7 +220,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged {
       _logger.LogInformation("Starting updater process. Path to zip is {zipPath}", zipPath);
       // start new process for Updater.exe
       Process.Start(new ProcessStartInfo {
-        FileName = "Updater.exe",
+        FileName = "DbStudio.Updater.exe",
         Arguments = $"\"{zipPath}\" \"{AppDomain.CurrentDomain.BaseDirectory}\"",
         UseShellExecute = false,
       });

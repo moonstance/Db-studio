@@ -26,7 +26,7 @@ namespace DbStudio {
           .WriteTo.File(logPath, rollingInterval: RollingInterval.Day)
           .CreateLogger();
 
-      Log.Logger.Information("Starting app...");
+      Log.Information("Starting app...");
 
       var serviceCollection = new ServiceCollection();
       ConfigureServices(serviceCollection);
@@ -48,6 +48,13 @@ namespace DbStudio {
       services.AddSingleton<MainWindow>();
       
       // ... register your viewmodels, data services etc
+    }
+
+    protected override void OnExit(ExitEventArgs e) {
+      Log.Information("Exiting app.");
+      Log.CloseAndFlush();
+      
+      base.OnExit(e);
     }
   }
 
