@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="0.2.18"></a>
+## [0.2.18](https://www.github.com/moonstance/Db-studio/releases/tag/v0.2.18) (2025-04-10)
+
+### Bug Fixes
+
+* doh! error ([b2d83c1](https://www.github.com/moonstance/Db-studio/commit/b2d83c128c50e29077cfd0d11818f161d8bc21c8))
+
 <a name="0.2.17"></a>
 ## [0.2.17](https://www.github.com/moonstance/Db-studio/releases/tag/v0.2.17) (2025-04-10)
 
