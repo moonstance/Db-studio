@@ -14,6 +14,7 @@ using System.Reflection;
 using DbStudio.Shared.Github;
 using DbStudio.Shared.Github.Models;
 using Microsoft.Extensions.Logging;
+using System.IO;
 
 namespace DbStudio;
 
@@ -213,6 +214,10 @@ public partial class MainWindow : Window, INotifyPropertyChanged {
 
 
     try {
+
+      // rename updater files from previous install
+      SwapUpdatedFiles();
+
       // Download the new version
       _logger.LogInformation("Downloading version {version} from github...", LatestVersionIdOnGithub.Name);
       var zipPath = await GitHubService.DownloadRelease(LatestVersionIdOnGithub);
@@ -237,6 +242,29 @@ public partial class MainWindow : Window, INotifyPropertyChanged {
     }
 
     
+  }
+
+  private void SwapUpdatedFiles() {
+    var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+
+    var pendingUpdates = Directory.GetFiles(baseDirectory, "*.dll_next")
+        .Concat(Directory.GetFiles(baseDirectory, "*.exe_next"));
+
+    foreach (var newFilePath in pendingUpdates) {
+      try {
+        var originalFilePath = newFilePath.Replace("_next", "");
+
+        if (File.Exists(originalFilePath))
+          File.Delete(originalFilePath);
+
+        File.Move(newFilePath, originalFilePath);
+
+        _logger.LogInformation("Replaced file: {Old} with {New}", originalFilePath, newFilePath);
+      }
+      catch (Exception ex) {
+        _logger.LogError(ex, "Failed to replace {File}", newFilePath);
+      }
+    }
   }
 
   private async Task CheckForUpdatesAsync() {

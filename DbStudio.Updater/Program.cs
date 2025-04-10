@@ -114,7 +114,8 @@ internal class Program {
         Directory.CreateDirectory(destDir);
 
         // don't try and overwrite myself
-        if (sourceFile.EndsWith("updater.exe", StringComparison.InvariantCultureIgnoreCase)) {
+        if (sourceFile.EndsWith("updater.exe", StringComparison.InvariantCultureIgnoreCase)
+          || sourceFile.EndsWith("updater.dll", StringComparison.InvariantCultureIgnoreCase)) {
           destFile += "_next";
         }
 
