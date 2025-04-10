@@ -22,7 +22,7 @@ Write and run C# scripts directly against your RavenDB (or other DBs in the futu
 
 ## 📸 Screenshots
 
-![Main UI](./screenshots/editor.png)
+![Main UI](./Screenshots/editor.png)
 
 > More screenshots coming soon
 
