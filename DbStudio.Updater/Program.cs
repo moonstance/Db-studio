@@ -125,7 +125,7 @@ internal class Program {
       Directory.Delete(tempExtractPath, true);
     }
     catch (Exception ex) {
-      Console.WriteLine("Error in extracting and copying the new installation files. More info in logfile at {logPath}", _logPath);
+      Console.WriteLine($"Error in extracting and copying the new installation files. More info in logfile at {_logPath}");
       _logger.Error(ex, "Error in extracting and copying the new installation files");
     }
   }
