@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DbStudio"
              xmlns:shared="clr-namespace:DbStudio.Shared;assembly=DbStudio.Shared"
-             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:iconPacks="clr-namespace:Material.Icons.WPF;assembly=Material.Icons.WPF"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="400">
@@ -29,7 +29,7 @@
             <!-- Group Header (DbType) -->
             <Border  BorderThickness="0.4">
               <StackPanel Orientation="Horizontal">
-                <iconPacks:PackIconModern Kind="Database" Width="12" Height="12" VerticalAlignment="Center" />
+                <iconPacks:MaterialIcon Kind="Database" Width="12" Height="12" VerticalAlignment="Center" />
                 <TextBlock Text="{Binding DisplayName}" Padding="0,0,20,0" Margin="5,0,0,0">
                 </TextBlock>
               </StackPanel>
@@ -55,7 +55,7 @@
                       </ContextMenu>
                     </StackPanel.ContextMenu>
 
-                    <iconPacks:PackIconModern Kind="TextScript" Width="12" Height="12" VerticalAlignment="Center" />
+                    <iconPacks:MaterialIcon Kind="Script" Width="12" Height="12" VerticalAlignment="Center" />
                     <TextBlock Text="{Binding DisplayName}" Padding="0,0,0,0" Margin="5,0,0,0">
 
                     </TextBlock>

@@ -7,7 +7,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:iconPacks="clr-namespace:Material.Icons.WPF;assembly=Material.Icons.WPF"
              mc:Ignorable="d"
              d:DesignHeight="400" d:DesignWidth="300">
   <Border BorderThickness="0.3" BorderBrush="White">
@@ -28,7 +28,7 @@
                 Margin="20,0,0,0"
                 ToolTip="Add new datasource" HorizontalAlignment="Right">
           <StackPanel Orientation="Horizontal">
-            <iconPacks:PackIconModern Kind="Add" Width="12" Height="12" VerticalAlignment="Center" />
+            <iconPacks:MaterialIcon Kind="Add" Width="12" Height="12" VerticalAlignment="Center" />
             <TextBlock Text="Add server..." Margin="5,0,0,0"/>
           </StackPanel>
         </Button>
@@ -51,7 +51,7 @@
           <HierarchicalDataTemplate DataType="{x:Type shared:DataSource}"  ItemsSource="{Binding Databases}">
             <Border Tag="{Binding}" x:Name="myborder" BorderThickness="0.4">
               <StackPanel Orientation="Horizontal">
-                <iconPacks:PackIconModern Kind="Server" Width="12" Height="12" VerticalAlignment="Center" />
+                <iconPacks:MaterialIcon Kind="Server" Width="12" Height="12" VerticalAlignment="Center" />
                 <TextBlock Text="{Binding Url}" Padding="0,0,20,0" Margin="5,0,0,0">
                   <TextBlock.ContextMenu>
                     <ContextMenu>
@@ -94,7 +94,7 @@
                           CommandParameter="{Binding}"/>
                       </ContextMenu>
                     </StackPanel.ContextMenu>
-                    <iconPacks:PackIconModern Kind="Database" Width="12" Height="12" VerticalAlignment="Center" />
+                    <iconPacks:MaterialIcon Kind="Database" Width="12" Height="12" VerticalAlignment="Center" />
                     <TextBlock Text="{Binding Name}" Padding="0,0,0,0" Margin="5,0,0,0">
 
                     </TextBlock>

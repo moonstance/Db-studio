@@ -315,12 +315,12 @@ using (var session = RavenHelper.GetSession(SelectedRavenStore))
   private void SetRunButtonProps(bool isRunning) {
     if (isRunning) {
       tbRun.Text = "Running";
-      iconRun.Kind = MahApps.Metro.IconPacks.PackIconModernKind.ControlPause;
+      iconRun.Kind = Material.Icons.MaterialIconKind.Pause;
       btnRun.IsEnabled = false;
     }
     else {
       tbRun.Text = "Run";
-      iconRun.Kind = MahApps.Metro.IconPacks.PackIconModernKind.ControlPlay;
+      iconRun.Kind = Material.Icons.MaterialIconKind.Play;
       btnRun.IsEnabled = true;
     }
   }

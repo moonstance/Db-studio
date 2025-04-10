@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:DbStudio"
         mc:Ignorable="d"
         ThemeMode="Dark"
-        Title="Add or edit datasource" Height="450" Width="450">
+        Title="Add or edit datasource" Height="550" Width="450">
   <Grid>
     <!-- Create a dialog with ok and cancel buttons -->
     <Grid.RowDefinitions>
