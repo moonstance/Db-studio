@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="0.2.10"></a>
+## [0.2.10](https://www.github.com/moonstance/Db-studio/releases/tag/v0.2.10) (2025-04-10)
+
+### Bug Fixes
+
+* small change just for new build to test updater ([96f86dc](https://www.github.com/moonstance/Db-studio/commit/96f86dc7bf061e8755606a73f9446ec87bb0820e))
+
 <a name="0.2.9"></a>
 ## [0.2.9](https://www.github.com/moonstance/Db-studio/releases/tag/v0.2.9) (2025-04-10)
 
