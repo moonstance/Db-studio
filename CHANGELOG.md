@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="0.2.14"></a>
+## [0.2.14](https://www.github.com/moonstance/Db-studio/releases/tag/v0.2.14) (2025-04-10)
+
+### Bug Fixes
+
+* new icons pack with smaller size ([0e23f13](https://www.github.com/moonstance/Db-studio/commit/0e23f13e70b1cf0ba12a3b6487093ba771861569))
+
 <a name="0.2.13"></a>
 ## [0.2.13](https://www.github.com/moonstance/Db-studio/releases/tag/v0.2.13) (2025-04-10)
 
