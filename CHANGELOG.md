@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="0.2.11"></a>
+## [0.2.11](https://www.github.com/moonstance/Db-studio/releases/tag/v0.2.11) (2025-04-10)
+
+### Bug Fixes
+
+* using the correct updater name when updating. Logging when the app exits. ([48ffcc8](https://www.github.com/moonstance/Db-studio/commit/48ffcc8dd5433e35a2a9c9d89b9992803ef2e24f))
+
 <a name="0.2.10"></a>
 ## [0.2.10](https://www.github.com/moonstance/Db-studio/releases/tag/v0.2.10) (2025-04-10)
 
