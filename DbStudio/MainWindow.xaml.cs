@@ -218,10 +218,11 @@ public partial class MainWindow : Window, INotifyPropertyChanged {
       var zipPath = await GitHubService.DownloadRelease(LatestVersionIdOnGithub);
 
       _logger.LogInformation("Starting updater process. Path to zip is {zipPath}", zipPath);
+      var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
       // start new process for Updater.exe
       Process.Start(new ProcessStartInfo {
         FileName = "DbStudio.Updater.exe",
-        Arguments = $"\"{zipPath}\" \"{AppDomain.CurrentDomain.BaseDirectory}\"",
+        Arguments = $"\"{zipPath}\" \"{baseDirectory}\"",
         UseShellExecute = false,
       });
 

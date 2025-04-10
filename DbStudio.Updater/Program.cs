@@ -31,11 +31,15 @@ internal class Program {
       return 1;
     }
 
+
     string zipPath = args[0];
-    string targetPath = args[1];
+    string targetPath = args[1].Trim();
+    targetPath = targetPath.Replace("\"", "");
+    if(targetPath.EndsWith("\\")) {
+      targetPath = targetPath.Substring(0, targetPath.Length - 1);
+    }
 
     Console.WriteLine($"Updater started. Zip: {zipPath}, Target: {targetPath}");
-    _logger.Information("Updater started. Zip: {zipPath}, Target: {targetPath}", zipPath, targetPath);
 
     await WaitForDbStudioToExit(targetPath);
     ExtractZipToTempAndReplace(zipPath, targetPath);
@@ -44,33 +48,42 @@ internal class Program {
     return 0;
   }
 
-  private static async Task WaitForDbStudioToExit(string appFolder) {
-    const string exeName = "DbStudio.exe";
-    int maxWaitMs = 10000;
-    int delayMs = 250;
+  private static async Task<bool> WaitForDbStudioToExit(string appFolder) {
+    try {
+      const string exeName = "DbStudio.exe";
+      int maxWaitMs = 10000;
+      int delayMs = 250;
 
-    var exePath = Path.Combine(appFolder, exeName);
+      var exePath = Path.Combine(appFolder, exeName);
 
-    var sw = Stopwatch.StartNew();
-    while (sw.ElapsedMilliseconds < maxWaitMs) {
-      var isRunning = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(exeName))
-          .Any(p => {
-            try {
-              return string.Equals(p.MainModule?.FileName, exePath, StringComparison.OrdinalIgnoreCase);
-            }
-            catch {
-              return false;
-            }
-          });
+      var sw = Stopwatch.StartNew();
+      while (sw.ElapsedMilliseconds < maxWaitMs) {
+        var isRunning = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(exeName))
+            .Any(p => {
+              try {
+                return string.Equals(p.MainModule?.FileName, exePath, StringComparison.OrdinalIgnoreCase);
+              }
+              catch {
+                return false;
+              }
+            });
 
-      if (!isRunning)
-        return;
+        if (!isRunning)
+          return true;
 
-      await Task.Delay(delayMs);
+        await Task.Delay(delayMs);
+      }
+
+      Console.WriteLine("DbStudio.exe did not exit in time. Proceeding anyway.");
+      _logger.Error("DbStudio.exe did not exit in time.Proceeding anyway.");
+
+      return true;
     }
+    catch (Exception ex) {
+      _logger.Error(ex, "Error when waiting for DbStudio process to exit");
+    }
+    return false;
 
-    Console.WriteLine("DbStudio.exe did not exit in time. Proceeding anyway.");
-    _logger.Error("DbStudio.exe did not exit in time.Proceeding anyway.");
   }
 
   private static void ExtractZipToTempAndReplace(string zipPath, string targetPath) {
