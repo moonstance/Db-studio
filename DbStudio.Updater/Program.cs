@@ -10,44 +10,50 @@ internal class Program {
   private static string _logPath;
 
   static async Task<int> Main(string[] args) {
+    try {
+      _logPath = Path.Combine(
+          Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+          "Moonstance", "DbStudio", "dbstudio-updater.log");
 
-    _logPath = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-        "Moonstance", "DbStudio", "dbstudio-updater.log");
+      Log.Logger = new LoggerConfiguration()
+          .MinimumLevel.Debug()
+          .WriteTo.File(_logPath, rollingInterval: RollingInterval.Day)
+          .CreateLogger();
 
-    Log.Logger = new LoggerConfiguration()
-        .MinimumLevel.Debug()
-        .WriteTo.File(_logPath, rollingInterval: RollingInterval.Day)
-        .CreateLogger();
+      _logger = Log.Logger;
 
-    _logger = Log.Logger;
-
-    _logger.Information("Starting updater. Args {args}", args);
+      _logger.Information("Starting updater. Args {args}", args);
 
 
-    if (args.Length < 2) {
-      Console.WriteLine("Missing arguments: <zipPath> <targetAppPath>");
-      _logger.Error("Missing arguments: <zipPath> <targetAppPath>");
-      return 1;
+      if (args.Length < 2) {
+        Console.WriteLine("Missing arguments: <zipPath> <targetAppPath>");
+        _logger.Error("Missing arguments: <zipPath> <targetAppPath>");
+        return 1;
+      }
+
+
+      string zipPath = args[0];
+      string targetPath = args[1].Trim();
+      targetPath = targetPath.Replace("\"", "");
+      if (targetPath.EndsWith("\\")) {
+        targetPath = targetPath.Substring(0, targetPath.Length - 1);
+      }
+
+      Console.WriteLine($"Updater started. Zip: {zipPath}, Target: {targetPath}");
+
+      var waitResult = await WaitForDbStudioToExit(targetPath);
+      _logger.Information("Waiting result: {waiting}", waitResult);
+
+      ExtractZipToTempAndReplace(zipPath, targetPath);
+      LaunchDbStudio(targetPath);
+
     }
-
-
-    string zipPath = args[0];
-    string targetPath = args[1].Trim();
-    targetPath = targetPath.Replace("\"", "");
-    if(targetPath.EndsWith("\\")) {
-      targetPath = targetPath.Substring(0, targetPath.Length - 1);
+    catch (Exception ex) {
+      _logger.Error(ex, "Error in install.");
+      Log.CloseAndFlush();
     }
-
-    Console.WriteLine($"Updater started. Zip: {zipPath}, Target: {targetPath}");
-
-    var waitResult = await WaitForDbStudioToExit(targetPath);
-    _logger.Information("Waiting result: {waiting}", waitResult);
-
-    ExtractZipToTempAndReplace(zipPath, targetPath);
-    LaunchDbStudio(targetPath);
-
     await Task.Delay(1500);
+
 
     return 0;
   }
