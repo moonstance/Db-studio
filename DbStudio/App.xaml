@@ -5,7 +5,6 @@
              xmlns:common="clr-namespace:DbStudio.Common"
              xmlns:codeFixes="clr-namespace:RoslynPad.Roslyn.CodeFixes;assembly=RoslynPad.Roslyn"
              xmlns:codeActions="clr-namespace:Microsoft.CodeAnalysis.CodeActions;assembly=Microsoft.CodeAnalysis.Workspaces"
-             StartupUri="MainWindow.xaml"
              ThemeMode="Light">
   <Application.Resources>
     <DrawingImage x:Key="Bulb">

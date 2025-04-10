@@ -13,6 +13,7 @@ using DbStudio.Common;
 using System.Reflection;
 using DbStudio.Shared.Github;
 using DbStudio.Shared.Github.Models;
+using Microsoft.Extensions.Logging;
 
 namespace DbStudio;
 
@@ -41,15 +42,17 @@ public partial class MainWindow : Window, INotifyPropertyChanged {
 
 
   private readonly ObservableCollection<DocumentViewModel> _documents;
+  private readonly ILogger<MainWindow> _logger;
   private Release? LatestVersionIdOnGithub = null;
 
   protected void OnPropertyChanged([CallerMemberName] string? propertyName = null) {
     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
   }
 
-  public MainWindow() {
+  public MainWindow(ILogger<MainWindow> logger) {
 
     InitializeComponent();
+    _logger = logger;
 
     _documents = new ObservableCollection<DocumentViewModel>();
     _queryEditors = new ObservableCollection<QueryEditor>();
@@ -79,11 +82,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged {
     Loaded += (s, e) => {
       Task.Run( () => CheckForUpdatesAsync() );
     };
-
-
-
-
-
+    
   }
 
 
@@ -207,14 +206,18 @@ public partial class MainWindow : Window, INotifyPropertyChanged {
 
   private async void btnInstallNewVersion_Click(object sender, RoutedEventArgs e) {
 
-    if (LatestVersionIdOnGithub == null)
+    if (LatestVersionIdOnGithub == null) {
+      _logger.LogInformation("Have no clue what latest version on Github is. Aborting install.");
       return;
+    }
 
 
     try {
       // Download the new version
+      _logger.LogInformation("Downloading version {version} from github...", LatestVersionIdOnGithub.Name);
       var zipPath = await GitHubService.DownloadRelease(LatestVersionIdOnGithub);
 
+      _logger.LogInformation("Starting updater process. Path to zip is {zipPath}", zipPath);
       // start new process for Updater.exe
       Process.Start(new ProcessStartInfo {
         FileName = "Updater.exe",
@@ -222,12 +225,14 @@ public partial class MainWindow : Window, INotifyPropertyChanged {
         UseShellExecute = false,
       });
 
+      _logger.LogInformation("Shutting down DbStudio before install.");
       // kill this application
       Application.Current.Shutdown();
 
     }
-    catch (Exception ex) { 
+    catch (Exception ex) {
       // TODO: Log it
+      _logger.LogError(ex, "Error installing new version.");
     }
 
     

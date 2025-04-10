@@ -1,12 +1,33 @@
-﻿using System.Diagnostics;
+﻿using Serilog;
+using System.Diagnostics;
 using System.IO.Compression;
 
 namespace DbStudio.Updater;
 
 internal class Program {
+
+  private static ILogger _logger;
+  private static string _logPath;
+
   static async Task<int> Main(string[] args) {
+
+    _logPath = Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+        "Moonstance", "DbStudio", "dbstudio-updater.log");
+
+    Log.Logger = new LoggerConfiguration()
+        .MinimumLevel.Debug()
+        .WriteTo.File(_logPath, rollingInterval: RollingInterval.Day)
+        .CreateLogger();
+
+    _logger = Log.Logger;
+
+    _logger.Information("Starting updater. Args {args}", args);
+
+
     if (args.Length < 2) {
       Console.WriteLine("Missing arguments: <zipPath> <targetAppPath>");
+      _logger.Error("Missing arguments: <zipPath> <targetAppPath>");
       return 1;
     }
 
@@ -14,6 +35,7 @@ internal class Program {
     string targetPath = args[1];
 
     Console.WriteLine($"Updater started. Zip: {zipPath}, Target: {targetPath}");
+    _logger.Information("Updater started. Zip: {zipPath}, Target: {targetPath}", zipPath, targetPath);
 
     await WaitForDbStudioToExit(targetPath);
     ExtractZipToTempAndReplace(zipPath, targetPath);
@@ -48,43 +70,56 @@ internal class Program {
     }
 
     Console.WriteLine("DbStudio.exe did not exit in time. Proceeding anyway.");
+    _logger.Error("DbStudio.exe did not exit in time.Proceeding anyway.");
   }
 
   private static void ExtractZipToTempAndReplace(string zipPath, string targetPath) {
-    string tempExtractPath = Path.Combine(Path.GetTempPath(), "DbStudio_Update");
+    try {
+      string tempExtractPath = Path.Combine(Path.GetTempPath(), "DbStudio_Update");
 
-    if (Directory.Exists(tempExtractPath))
-      Directory.Delete(tempExtractPath, true);
+      if (Directory.Exists(tempExtractPath))
+        Directory.Delete(tempExtractPath, true);
 
-    ZipFile.ExtractToDirectory(zipPath, tempExtractPath);
+      ZipFile.ExtractToDirectory(zipPath, tempExtractPath);
 
-    // Copy all files into app dir (overwrite)
-    foreach (var sourceFile in Directory.GetFiles(tempExtractPath, "*", SearchOption.AllDirectories)) {
-      string relative = Path.GetRelativePath(tempExtractPath, sourceFile);
-      string destFile = Path.Combine(targetPath, relative);
-      string destDir = Path.GetDirectoryName(destFile)!;
+      // Copy all files into app dir (overwrite)
+      foreach (var sourceFile in Directory.GetFiles(tempExtractPath, "*", SearchOption.AllDirectories)) {
+        string relative = Path.GetRelativePath(tempExtractPath, sourceFile);
+        string destFile = Path.Combine(targetPath, relative);
+        string destDir = Path.GetDirectoryName(destFile)!;
 
-      Directory.CreateDirectory(destDir);
+        Directory.CreateDirectory(destDir);
 
-      // don't try and overwrite myself
-      if (sourceFile.EndsWith("updater.exe", StringComparison.InvariantCultureIgnoreCase)) {
-        destFile += "_next";
+        // don't try and overwrite myself
+        if (sourceFile.EndsWith("updater.exe", StringComparison.InvariantCultureIgnoreCase)) {
+          destFile += "_next";
+        }
+
+        File.Copy(sourceFile, destFile, overwrite: true);
       }
 
-      File.Copy(sourceFile, destFile, overwrite: true);
+      // Clean up temp dir if you want
+      Directory.Delete(tempExtractPath, true);
     }
-
-    // Clean up temp dir if you want
-    Directory.Delete(tempExtractPath, true);
+    catch (Exception ex) {
+      Console.WriteLine("Error in extracting and copying the new installation files. More info in logfile at {logPath}", _logPath);
+      _logger.Error(ex, "Error in extracting and copying the new installation files");
+    }
   }
 
   private static void LaunchDbStudio(string appFolder) {
-    var exePath = Path.Combine(appFolder, "DbStudio.exe");
-    Process.Start(new ProcessStartInfo {
-      FileName = exePath,
-      UseShellExecute = true,
-      WorkingDirectory = appFolder
-    });
+    try {
+      var exePath = Path.Combine(appFolder, "DbStudio.exe");
+      Process.Start(new ProcessStartInfo {
+        FileName = exePath,
+        UseShellExecute = true,
+        WorkingDirectory = appFolder
+      });
+    }
+    catch (Exception ex) {
+      Console.WriteLine("Error launching DbStudio after install. More info in logfile at {logPath}", _logPath);
+      _logger.Error(ex, "Error launching DbStudio after install");
+    }
   }
 
 
