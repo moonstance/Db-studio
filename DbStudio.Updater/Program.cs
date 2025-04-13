@@ -99,7 +99,13 @@ internal class Program {
   private static void ExtractZipToTempAndReplace(string zipPath, string targetPath) {
     try {
 
-      var tempExtractPath = Path.GetDirectoryName(zipPath)!;
+      var zipDirectoryName = Path.GetDirectoryName(zipPath)!;
+
+      var tempExtractPath = Path.Combine(zipDirectoryName, "DbStudio");
+
+      if (Directory.Exists(tempExtractPath)) {
+        Directory.Delete(tempExtractPath, true);
+      }
 
       ZipFile.ExtractToDirectory(zipPath, tempExtractPath, true);
 
