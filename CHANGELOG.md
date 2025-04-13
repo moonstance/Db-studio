@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="0.2.28"></a>
+## [0.2.28](https://www.github.com/moonstance/Db-studio/releases/tag/v0.2.28) (2025-04-13)
+
+### Bug Fixes
+
+* some more logging. Log files are retained for 10 days. ([8909cbf](https://www.github.com/moonstance/Db-studio/commit/8909cbfee62403f22bb4d91e2ca7698c5f654314))
+
 <a name="0.2.27"></a>
 ## [0.2.27](https://www.github.com/moonstance/Db-studio/releases/tag/v0.2.27) (2025-04-13)
 
