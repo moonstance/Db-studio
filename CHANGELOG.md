@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="0.3.0"></a>
+## [0.3.0](https://www.github.com/moonstance/Db-studio/releases/tag/v0.3.0) (2025-04-13)
+
+### Features
+
+* context menues to open RavenDb studio from Datasource or Database ([afc2200](https://www.github.com/moonstance/Db-studio/commit/afc22007b524afa9972be181df24adfe67a5b068))
+* spinner to show when updating ([917a4e4](https://www.github.com/moonstance/Db-studio/commit/917a4e4f8e01fc7f8424ffe3be162f9c514a4190))
+
 <a name="0.2.29"></a>
 ## [0.2.29](https://www.github.com/moonstance/Db-studio/releases/tag/v0.2.29) (2025-04-13)
 
