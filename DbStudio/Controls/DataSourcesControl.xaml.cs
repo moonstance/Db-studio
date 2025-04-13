@@ -36,6 +36,7 @@ public partial class DataSourcesControl : UserControl, INotifyPropertyChanged {
   public ICommand DatabaseDblClickCommand { get; }
   public ICommand RefreshDatabasesCommand { get; }
   public ICommand SetDomainAssemblyForDatabaseCommand { get; }
+  public ICommand OpenRavenStudioCommand { get; }
 
   public DataSourcesControl() {
     InitializeComponent();
@@ -58,6 +59,7 @@ public partial class DataSourcesControl : UserControl, INotifyPropertyChanged {
     RefreshDatabasesCommand = new RelayCommand(parameter => RefreshDatabasesCommandHandler(parameter));
     DatabaseDblClickCommand = new RelayCommand(parameter => DatabaseDblClickCommandHandler(parameter));
     SetDomainAssemblyForDatabaseCommand = new RelayCommand(parameter => SetDomainAssemblyForDatabaseCommandHandler(parameter));
+    OpenRavenStudioCommand = new RelayCommand(parameter => OpenRavenStudioCommandHandler(parameter));
   }
 
   private void DatabaseDblClickCommandHandler(object parameter) {
@@ -76,6 +78,22 @@ public partial class DataSourcesControl : UserControl, INotifyPropertyChanged {
     if (parameter is Database database) {
       InvokeNewQuery(database);
     }
+  }
+
+  private void OpenRavenStudioCommandHandler(object parameter) {
+    if (parameter is DataSource datasource) {
+      OpenBrowser(datasource.Url + "/studio/index.html");
+    }
+    else if (parameter is Database database) {
+      OpenBrowser(database.ServerUrl + "/studio/index.html#databases/documents?&database=" + database.Name);
+    }
+  }
+
+  private void OpenBrowser(string url) {
+    try {
+      Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+    }
+    catch { }
   }
 
   private void InvokeNewQuery(Database database) {

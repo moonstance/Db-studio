@@ -66,6 +66,10 @@
                         Command="{Binding DataContext.RefreshDatabasesCommand, Source={x:Reference MyDataSourcesControl}}"
                         CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
 
+                      <MenuItem Header="Open RavenDb studio..."
+                        Command="{Binding DataContext.OpenRavenStudioCommand, Source={x:Reference MyDataSourcesControl}}"
+                        CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+
                     </ContextMenu>
                   </TextBlock.ContextMenu>
                 </TextBlock>
@@ -92,6 +96,11 @@
                         <MenuItem Header="Select custom domain assembly file (.dll)..."
                           Command="{Binding DataContext.SetDomainAssemblyForDatabaseCommand, Source={x:Reference MyDataSourcesControl}}"
                           CommandParameter="{Binding}"/>
+
+                        <MenuItem Header="Open RavenDb studio..."
+                          Command="{Binding DataContext.OpenRavenStudioCommand, Source={x:Reference MyDataSourcesControl}}"
+                          CommandParameter="{Binding}"/>
+
                       </ContextMenu>
                     </StackPanel.ContextMenu>
                     <iconPacks:MaterialIcon Kind="Database" Width="12" Height="12" VerticalAlignment="Center" />
