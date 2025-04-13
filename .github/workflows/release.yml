@@ -18,6 +18,7 @@ jobs:
       Updater_Project: DbStudio.Updater/DbStudio.Updater.csproj
       Output_Dir: output
 
+
     steps:
     - name: Checkout source
       uses: actions/checkout@v3
