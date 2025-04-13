@@ -101,7 +101,7 @@ internal class Program {
 
       var tempExtractPath = Path.GetDirectoryName(zipPath)!;
 
-      ZipFile.ExtractToDirectory(zipPath, tempExtractPath);
+      ZipFile.ExtractToDirectory(zipPath, tempExtractPath, true);
 
       // Copy all files into app dir (overwrite)
       foreach (var sourceFile in Directory.GetFiles(tempExtractPath, "*", SearchOption.AllDirectories)) {
