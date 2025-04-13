@@ -23,7 +23,7 @@ namespace DbStudio {
 
       Log.Logger = new LoggerConfiguration()
           .MinimumLevel.Debug()
-          .WriteTo.File(logPath, rollingInterval: RollingInterval.Day)
+          .WriteTo.File(logPath, rollingInterval: RollingInterval.Day, retainedFileCountLimit: 10)
           .CreateLogger();
 
       Log.Information("Starting app...");

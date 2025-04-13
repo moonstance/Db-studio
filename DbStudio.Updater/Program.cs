@@ -17,7 +17,7 @@ internal class Program {
 
       Log.Logger = new LoggerConfiguration()
           .MinimumLevel.Debug()
-          .WriteTo.File(_logPath, rollingInterval: RollingInterval.Day)
+          .WriteTo.File(_logPath, rollingInterval: RollingInterval.Day, retainedFileCountLimit: 10)
           .CreateLogger();
 
       _logger = Log.Logger;
@@ -45,7 +45,7 @@ internal class Program {
       _logger.Information("Waiting result: {waiting}", waitResult);
 
       ExtractZipToTempAndReplace(zipPath, targetPath);
-      LaunchDbStudio(targetPath);
+      await LaunchDbStudio(targetPath);
 
     }
     catch (Exception ex) {
@@ -107,8 +107,10 @@ internal class Program {
         Directory.Delete(tempExtractPath, true);
       }
 
+      _logger.Information("Extracting new app files to temp folder at {tempFolder}", tempExtractPath);
       ZipFile.ExtractToDirectory(zipPath, tempExtractPath, true);
 
+      _logger.Information("Starting copying files to app directory...");
       // Copy all files into app dir (overwrite)
       foreach (var sourceFile in Directory.GetFiles(tempExtractPath, "*", SearchOption.AllDirectories)) {
         string relative = Path.GetRelativePath(tempExtractPath, sourceFile);
@@ -119,6 +121,9 @@ internal class Program {
 
         File.Copy(sourceFile, destFile, overwrite: true);
       }
+
+      Console.WriteLine("Finished copying files to app folder.")
+      _logger.Information("Finished copying files to app folder.");
     }
     catch (Exception ex) {
       Console.WriteLine($"Error in extracting and copying the new installation files. More info in logfile at {_logPath}");
@@ -126,8 +131,12 @@ internal class Program {
     }
   }
 
-  private static void LaunchDbStudio(string appFolder) {
+  private static async Task LaunchDbStudio(string appFolder) {
     try {
+      Console.WriteLine("Starting DbStudio...");
+
+      await Task.Delay(1000);
+
       var exePath = Path.Combine(appFolder, "DbStudio.exe");
       Process.Start(new ProcessStartInfo {
         FileName = exePath,
@@ -138,6 +147,8 @@ internal class Program {
     catch (Exception ex) {
       Console.WriteLine("Error launching DbStudio after install. More info in logfile at {logPath}", _logPath);
       _logger.Error(ex, "Error launching DbStudio after install");
+      await Task.Delay(1000);
+
     }
   }
 
