@@ -98,10 +98,8 @@ internal class Program {
 
   private static void ExtractZipToTempAndReplace(string zipPath, string targetPath) {
     try {
-      string tempExtractPath = Path.Combine(Path.GetTempPath(), "DbStudio_Update");
 
-      if (Directory.Exists(tempExtractPath))
-        Directory.Delete(tempExtractPath, true);
+      var tempExtractPath = Path.GetDirectoryName(zipPath)!;
 
       ZipFile.ExtractToDirectory(zipPath, tempExtractPath);
 
@@ -113,17 +111,8 @@ internal class Program {
 
         Directory.CreateDirectory(destDir);
 
-        // don't try and overwrite myself
-        if (sourceFile.EndsWith("updater.exe", StringComparison.InvariantCultureIgnoreCase)
-          || sourceFile.EndsWith("updater.dll", StringComparison.InvariantCultureIgnoreCase)) {
-          destFile += "_next";
-        }
-
         File.Copy(sourceFile, destFile, overwrite: true);
       }
-
-      // Clean up temp dir if you want
-      Directory.Delete(tempExtractPath, true);
     }
     catch (Exception ex) {
       Console.WriteLine($"Error in extracting and copying the new installation files. More info in logfile at {_logPath}");

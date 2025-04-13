@@ -30,7 +30,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged {
 
 
   
-  private bool _updateAvailable = true;
+  private bool _updateAvailable = false;
   public bool UpdateAvailable {
     get => _updateAvailable;
     set { _updateAvailable = value; OnPropertyChanged(); }
@@ -222,7 +222,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged {
         return;
       }
 
-      var zipPath = Path.Combine(tempExtractZipPath, "DbStudi.zip");
+      var zipPath = Path.Combine(tempExtractZipPath, "DbStudio.zip");
       var updaterPath = Path.Combine(tempExtractZipPath, "DbStudio.Updater.exe");
 
       _logger.LogInformation("Starting updater process. Path to zip is {zipPath}", zipPath);
