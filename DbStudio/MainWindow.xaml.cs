@@ -15,6 +15,8 @@ using DbStudio.Shared.Github;
 using DbStudio.Shared.Github.Models;
 using Microsoft.Extensions.Logging;
 using System.IO;
+using System.IO.Compression;
+using Sparrow.Json;
 
 namespace DbStudio;
 
@@ -28,7 +30,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged {
 
 
   
-  private bool _updateAvailable = false;
+  private bool _updateAvailable = true;
   public bool UpdateAvailable {
     get => _updateAvailable;
     set { _updateAvailable = value; OnPropertyChanged(); }
@@ -215,18 +217,19 @@ public partial class MainWindow : Window, INotifyPropertyChanged {
 
     try {
 
-      // rename updater files from previous install
-      SwapUpdatedFiles();
+      var tempExtractZipPath = await DownloadAndUnzipUpdateAsync();
+      if (string.IsNullOrWhiteSpace(tempExtractZipPath)) {
+        return;
+      }
 
-      // Download the new version
-      _logger.LogInformation("Downloading version {version} from github...", LatestVersionIdOnGithub.Name);
-      var zipPath = await GitHubService.DownloadRelease(LatestVersionIdOnGithub);
+      var zipPath = Path.Combine(tempExtractZipPath, "DbStudi.zip");
+      var updaterPath = Path.Combine(tempExtractZipPath, "DbStudio.Updater.exe");
 
       _logger.LogInformation("Starting updater process. Path to zip is {zipPath}", zipPath);
       var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
       // start new process for Updater.exe
       Process.Start(new ProcessStartInfo {
-        FileName = "DbStudio.Updater.exe",
+        FileName = updaterPath,
         Arguments = $"\"{zipPath}\" \"{baseDirectory}\"",
         UseShellExecute = false,
       });
@@ -244,33 +247,36 @@ public partial class MainWindow : Window, INotifyPropertyChanged {
     
   }
 
-  private void SwapUpdatedFiles() {
-    var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-
-    var pendingUpdates = Directory.GetFiles(baseDirectory, "*.dll_next")
-        .Concat(Directory.GetFiles(baseDirectory, "*.exe_next"));
-
-    foreach (var newFilePath in pendingUpdates) {
-      try {
-        var originalFilePath = newFilePath.Replace("_next", "");
-
-        if (File.Exists(originalFilePath))
-          File.Delete(originalFilePath);
-
-        File.Move(newFilePath, originalFilePath);
-
-        _logger.LogInformation("Replaced file: {Old} with {New}", originalFilePath, newFilePath);
-      }
-      catch (Exception ex) {
-        _logger.LogError(ex, "Failed to replace {File}", newFilePath);
-      }
+  private async Task<string?> DownloadAndUnzipUpdateAsync() {
+    if (LatestVersionIdOnGithub == null) {
+      _logger.LogInformation("Have no clue what latest version on Github is. Aborting install.");
+      return null;
     }
+
+    _logger.LogInformation("Downloading version {version} from github...", LatestVersionIdOnGithub.Name);
+    var zipPath = await GitHubService.DownloadRelease(LatestVersionIdOnGithub);
+
+    if (zipPath == null) {
+      _logger.LogInformation("Could not download update.. aborting");
+      return null;
+    }
+
+    string tempExtractPath = Path.GetDirectoryName(zipPath)!;
+
+    // Extract update
+    ZipFile.ExtractToDirectory(zipPath, tempExtractPath);
+
+    string updaterZipPath = Path.Combine(tempExtractPath, "Updater.zip");
+    ZipFile.ExtractToDirectory(updaterZipPath, tempExtractPath, true);
+
+    return tempExtractPath;
+
   }
 
   private async Task CheckForUpdatesAsync() {
     try {
 
-      await Task.Delay(3000);
+      await Task.Delay(1000);
 
       // This runs off the UI thread
       LatestVersionIdOnGithub = await GitHubService.GetLatestVersionAsync();

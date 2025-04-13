@@ -48,7 +48,13 @@ public static class GitHubService {
     var downloadUrl = asset.Browser_Download_Url;
 
     // Where to save it
-    string targetPath = Path.Combine(Path.GetTempPath(), asset.Name);
+    string tempUpdatePath = Path.Combine(Path.GetTempPath(), "DbStudio_Update");
+    if (Directory.Exists(tempUpdatePath))
+      Directory.Delete(tempUpdatePath, true);
+
+    Directory.CreateDirectory(tempUpdatePath);
+
+    string targetPath = Path.Combine(tempUpdatePath, asset.Name);
 
     var response = await client.GetAsync(downloadUrl);
     if (!response.IsSuccessStatusCode) {

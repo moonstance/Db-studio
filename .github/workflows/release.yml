@@ -3,11 +3,10 @@ name: Build and Release DbStudio
 on:
   push:
     tags:
-      - 'v*.*.*' # Trigger only on version tags like v1.0.0
+      - 'v*.*.*'
 
 permissions:
   contents: write
-
 
 jobs:
   build:
@@ -31,20 +30,32 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore ${{ env.Solution_Name }}
 
-    - name: Build projects
-      run: dotnet build ${{ env.Solution_Name }} --configuration Release --no-restore
 
+    # Publish DbStudio to output/DbStudio
     - name: Publish DbStudio
       run: dotnet publish ${{ env.DbStudio_Project }} --configuration Release --output ${{ env.Output_Dir }}/DbStudio
 
-    - name: Publish DbStudio.Updater
-      run: dotnet publish ${{ env.Updater_Project }} --configuration Release --output ${{ env.Output_Dir }}/DbStudio
+    # Publish Updater to output/Updater
+    - name: Publish Updater
+      run: dotnet publish ${{ env.Updater_Project }} --configuration Release --output ${{ env.Output_Dir }}/Updater
 
-    - name: Zip Release
+    # Zip each individually
+    - name: Zip DbStudio
       run: Compress-Archive -Path ${{ env.Output_Dir }}/DbStudio/* -DestinationPath DbStudio.zip
 
-    - name: Create GitHub Release
+    - name: Zip Updater
+      run: Compress-Archive -Path ${{ env.Output_Dir }}/Updater/* -DestinationPath Updater.zip
+
+    # Create the final versioned ZIP with both zip files inside
+    - name: Create Final Release Bundle
+      run: |
+        New-Item -ItemType Directory -Path Bundle
+        Copy-Item -Path DbStudio.zip -Destination Bundle/
+        Copy-Item -Path Updater.zip -Destination Bundle/
+        Compress-Archive -Path Bundle/* -DestinationPath DbStudio_Release.zip
+
+    - name: Upload Final ZIP to GitHub Release
       uses: softprops/action-gh-release@v2
       with:
-        files: DbStudio.zip
+        files: DbStudio_Release.zip
         token: ${{ secrets.GITHUB_TOKEN }}
