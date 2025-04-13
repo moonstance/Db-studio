@@ -122,7 +122,7 @@ internal class Program {
         File.Copy(sourceFile, destFile, overwrite: true);
       }
 
-      Console.WriteLine("Finished copying files to app folder.")
+      Console.WriteLine("Finished copying files to app folder.");
       _logger.Information("Finished copying files to app folder.");
     }
     catch (Exception ex) {
