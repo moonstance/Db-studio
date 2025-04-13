@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DbStudio"
+        xmlns:controls="clr-namespace:DbStudio.Controls"
         xmlns:editor="clr-namespace:RoslynPad.Editor;assembly=RoslynPad.Editor.Windows"
         xmlns:iconPacks="clr-namespace:Material.Icons.WPF;assembly=Material.Icons.WPF"
         mc:Ignorable="d"
@@ -111,7 +112,15 @@
           <Button x:Name="btnInstallNewVersion" 
                   Margin="10,0,0,0" 
                   Click="btnInstallNewVersion_Click" 
-                  Visibility="{Binding UpdateAvailable, Converter={StaticResource BoolToVisibilityConverter}}">Install new version</Button>
+                  Visibility="{Binding UpdateAvailable, Converter={StaticResource BoolToVisibilityConverter}}">
+            <StackPanel Orientation="Vertical">
+              <TextBlock>
+                Install new version
+              </TextBlock>
+              <controls:DotSpinner x:Name="ctrlUpdateSpinner" HorizontalAlignment="Left" Visibility="Collapsed" />
+            </StackPanel>
+            
+          </Button>
         </StackPanel>
 
       </StatusBarItem>

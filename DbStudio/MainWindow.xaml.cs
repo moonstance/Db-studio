@@ -216,9 +216,11 @@ public partial class MainWindow : Window, INotifyPropertyChanged {
 
 
     try {
+      ctrlUpdateSpinner.Visibility = Visibility.Visible;
 
       var tempExtractZipPath = await DownloadAndUnzipUpdateAsync();
       if (string.IsNullOrWhiteSpace(tempExtractZipPath)) {
+        ctrlUpdateSpinner.Visibility = Visibility.Collapsed;
         return;
       }
 
@@ -244,7 +246,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged {
       _logger.LogError(ex, "Error installing new version.");
     }
 
-    
+    ctrlUpdateSpinner.Visibility = Visibility.Collapsed;
   }
 
   private async Task<string?> DownloadAndUnzipUpdateAsync() {
