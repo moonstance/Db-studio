@@ -95,10 +95,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged {
 
   }
 
-  //private void AddNewDocument() {
-  //  _documents.Add(new DocumentViewModel(RoslynHelper.GetHost()));
-  //}
-
   private RavenStore? GetSelectedDbStore() {
     var selectedTab = EditorTabControl.SelectedItem as QueryEditor;
     if (selectedTab != null) {
@@ -130,6 +126,28 @@ public partial class MainWindow : Window, INotifyPropertyChanged {
 
     return queryEditor;
   }
+  private void OpenScriptFile(OpenScriptFileArg openScriptFileArg) {
+    if (!openScriptFileArg.OpenInNewTab) {
+      UseScriptInSelectedEditor(ScriptFileService.ReadScriptFile(openScriptFileArg.ScriptFile));
+    }
+    else {
+      var selectedEditor = EditorTabControl.SelectedItem as QueryEditor;
+      if (selectedEditor != null) {
+        // create a new editor with the same Ravenstore from the current selected one.
+        var selectedEditorStore = selectedEditor.RavenStore;
+        var newEditor = AddQueryEditor(selectedEditorStore);
+        newEditor.SetEditorText(ScriptFileService.ReadScriptFile(openScriptFileArg.ScriptFile));
+      }
+    }
+  }
+  private void UseScriptInSelectedEditor(string scriptContent) {
+    var selectedEditor = EditorTabControl.SelectedItem as QueryEditor;
+    if (selectedEditor != null) {
+      selectedEditor.SetEditorText(scriptContent);
+    }
+  }
+
+  #region Event handlers
 
   private async void Window_KeyDown(object sender, KeyEventArgs e) {
     if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.N) {
@@ -177,35 +195,14 @@ public partial class MainWindow : Window, INotifyPropertyChanged {
     UseScriptInSelectedEditor(TemplateService.ReadTemplate(e));
   }
 
-  private void UseScriptInSelectedEditor(string scriptContent) {
-    var selectedEditor = EditorTabControl.SelectedItem as QueryEditor;
-    if (selectedEditor != null) {
-      selectedEditor.SetEditorText(scriptContent);
-    }
-  }
-
-  //private void scriptFilesControl_ScriptFileDoubleClicked(object sender, Shared.ScriptFiles.ScriptFile e) {
-  //  UseScriptInSelectedEditor(ScriptFileService.ReadScriptFile(e));
-  //}
-
   private void scriptFilesControl_ScriptFileDoubleClicked(object sender, OpenScriptFileArg e) {
     OpenScriptFile(e);
   }
 
-  private void OpenScriptFile(OpenScriptFileArg openScriptFileArg) {
-    if (!openScriptFileArg.OpenInNewTab) {
-      UseScriptInSelectedEditor(ScriptFileService.ReadScriptFile(openScriptFileArg.ScriptFile));
-    }
-    else {
-      var selectedEditor = EditorTabControl.SelectedItem as QueryEditor;
-      if (selectedEditor != null) {
-        // create a new editor with the same Ravenstore from the current selected one.
-        var selectedEditorStore = selectedEditor.RavenStore;
-        var newEditor = AddQueryEditor(selectedEditorStore);
-        newEditor.SetEditorText(ScriptFileService.ReadScriptFile(openScriptFileArg.ScriptFile));
-      }
-    }
-  }
+  #endregion
+
+
+  #region Update
 
   private async void btnInstallNewVersion_Click(object sender, RoutedEventArgs e) {
 
@@ -301,6 +298,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged {
       Debug.WriteLine("Update check failed: " + ex.Message);
     }
   }
+
+  #endregion
 }
 
 public static class ScrollViewerFix {

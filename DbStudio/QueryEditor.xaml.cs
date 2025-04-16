@@ -4,7 +4,6 @@ using DbStudio.Shared.ScriptFiles;
 using DbStudio.Shared.ScriptTemplates;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
-using Microsoft.CodeAnalysis.Differencing;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.Win32;
 using Newtonsoft.Json;
@@ -15,7 +14,6 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Shapes;
 
 namespace DbStudio;
 
@@ -116,7 +114,15 @@ using (var session = RavenHelper.GetSession(SelectedRavenStore))
 ";
     }
 
-    await editor.InitializeAsync(_document.Host, new ClassificationHighlightColors(), workingDirectory, documentText, SourceCodeKind.Script);
+    // For dark mode
+    //IClassificationHighlightColors classificationColors = new DarkModeHighlightColors();
+    //CodeEditor.Background = Brushes.Black;
+    // normal ones: new ClassificationHighlightColors()
+    IClassificationHighlightColors classificationColors = new ClassificationHighlightColors();
+
+    await editor.InitializeAsync(_document.Host, classificationColors , workingDirectory, documentText, SourceCodeKind.Script);
+
+    
 
     _isLoading = false;
   }
