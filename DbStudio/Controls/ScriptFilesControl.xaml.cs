@@ -48,7 +48,7 @@ namespace DbStudio {
 
     private void ScriptFileDblClickCommandHandler(object parameter) {
       if (parameter is ScriptFile scriptfile) {
-        InvokeUseScriptFile(scriptfile, false);
+        InvokeUseScriptFile(scriptfile, true);
       }
     }
 

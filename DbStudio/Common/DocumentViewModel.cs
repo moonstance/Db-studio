@@ -55,6 +55,7 @@ namespace DbStudio.Common {
     }
 
     public string FullPathAndName { get; internal set; }
+    public bool IsTemplate { get; internal set; }
 
     public event PropertyChangedEventHandler? PropertyChanged;
 

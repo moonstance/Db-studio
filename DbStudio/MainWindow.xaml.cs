@@ -128,7 +128,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged {
   }
   private void OpenScriptFile(OpenScriptFileArg openScriptFileArg) {
     if (!openScriptFileArg.OpenInNewTab) {
-      UseScriptInSelectedEditor(ScriptFileService.ReadScriptFile(openScriptFileArg.ScriptFile));
+      UseScriptInSelectedEditor(openScriptFileArg.ScriptFile);
     }
     else {
       var selectedEditor = EditorTabControl.SelectedItem as QueryEditor;
@@ -136,14 +136,31 @@ public partial class MainWindow : Window, INotifyPropertyChanged {
         // create a new editor with the same Ravenstore from the current selected one.
         var selectedEditorStore = selectedEditor.RavenStore;
         var newEditor = AddQueryEditor(selectedEditorStore);
-        newEditor.SetEditorText(ScriptFileService.ReadScriptFile(openScriptFileArg.ScriptFile));
+        newEditor.UseScriptFile(openScriptFileArg.ScriptFile);
       }
     }
   }
-  private void UseScriptInSelectedEditor(string scriptContent) {
+  private void UseScriptInSelectedEditor(ScriptFile scriptFile) {
     var selectedEditor = EditorTabControl.SelectedItem as QueryEditor;
     if (selectedEditor != null) {
-      selectedEditor.SetEditorText(scriptContent);
+      selectedEditor.UseScriptFile(scriptFile);
+    }
+  }
+  private void UseScriptInSelectedEditor(ScriptTemplate scriptTemplate) {
+    var selectedEditor = EditorTabControl.SelectedItem as QueryEditor;
+    if (selectedEditor != null) {
+      selectedEditor.UseTemplate(scriptTemplate);
+    }
+  }
+
+  private void UseScriptInNewEditor(ScriptTemplate scriptTemplate) {
+
+    var selectedEditor = EditorTabControl.SelectedItem as QueryEditor;
+    if (selectedEditor != null) {
+      // create a new editor with the same Ravenstore from the current selected one.
+      var selectedEditorStore = selectedEditor.RavenStore;
+      var newEditor = AddQueryEditor(selectedEditorStore);
+      newEditor.UseTemplate(scriptTemplate);
     }
   }
 
@@ -159,8 +176,9 @@ public partial class MainWindow : Window, INotifyPropertyChanged {
       if (EditorTabControl.SelectedItem is QueryEditor queryEditor) {
         queryEditor.SaveCode();
 
-        // tell ScriptFile control to reload
+        // tell ScriptFile and Templates control to reload
         scriptFilesControl.LoadFiles();
+        ctrlTemplates.LoadTemplates();
         e.Handled = true; // Prevent bubbling
       }
     }
@@ -172,7 +190,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged {
       }
     }
     else if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.Return) {
-      // Execute doe
+      // Execute script
       if (EditorTabControl.SelectedItem is QueryEditor queryEditor) {
         try {
           await queryEditor.ExecuteAsync();
@@ -192,7 +210,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged {
   }
 
   private void TemplatesControl_ScriptTemplateDoubleClicked(object sender, Shared.ScriptTemplates.ScriptTemplate e) {
-    UseScriptInSelectedEditor(TemplateService.ReadTemplate(e));
+    UseScriptInNewEditor(e);
   }
 
   private void scriptFilesControl_ScriptFileDoubleClicked(object sender, OpenScriptFileArg e) {

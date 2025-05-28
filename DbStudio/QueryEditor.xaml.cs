@@ -51,7 +51,6 @@ public partial class QueryEditor : UserControl, INotifyPropertyChanged {
     _document = new DocumentViewModel(RoslynHelper.GetHost(ravenStore.DomainAssembly != null ? new [] { ravenStore.DomainAssembly } : null));
     DataContext = this;
 
-    // IMPORTANT: Assign the document as the DataContext for the CodeEditor.
     CodeEditor.DataContext = _document;
     _ravenStore = ravenStore;
 
@@ -75,6 +74,25 @@ public partial class QueryEditor : UserControl, INotifyPropertyChanged {
 
     var workingDirectory = Directory.GetCurrentDirectory();
 
+    var documentText = "";
+    if (editor.Text.Length == 0) {
+      documentText = GetDocumentTextForNewTab();
+    }
+
+    // For dark mode
+    //IClassificationHighlightColors classificationColors = new DarkModeHighlightColors();
+    //CodeEditor.Background = Brushes.Black;
+    // normal ones: new ClassificationHighlightColors()
+    IClassificationHighlightColors classificationColors = new ClassificationHighlightColors();
+
+    await editor.InitializeAsync(_document.Host, classificationColors , workingDirectory, documentText, SourceCodeKind.Script);
+
+    
+
+    _isLoading = false;
+  }
+
+  private string GetDocumentTextForNewTab() {
     string documentText = @$"using System;
 using System.Collections.Generic; 
 using System.Linq; 
@@ -103,28 +121,15 @@ using (var session = RavenHelper.GetSession(SelectedRavenStore))
     if (startTemplate != null) {
       _isLoading = true;
       documentText = TemplateService.ReadTemplate(startTemplate);
-      _document.FullPathAndName = TemplateService.GetTemplateFullPath(startTemplate);
-      DocumentTitle = "[T] " + startTemplate.DisplayName;
-      
+      DocumentTitle = "Untitled *";
+      _document.IsTemplate = true;
     }
 
     if (string.IsNullOrEmpty(documentText)) {
-      documentText = $@"// Start typing here, or select a template/script from the left panel.
-// Tip: Use Shift+Ctrl+T to open the Templates list quickly.
-";
+      documentText = $@"// Start typing here, or select a template/script from the left panel.";
     }
 
-    // For dark mode
-    //IClassificationHighlightColors classificationColors = new DarkModeHighlightColors();
-    //CodeEditor.Background = Brushes.Black;
-    // normal ones: new ClassificationHighlightColors()
-    IClassificationHighlightColors classificationColors = new ClassificationHighlightColors();
-
-    await editor.InitializeAsync(_document.Host, classificationColors , workingDirectory, documentText, SourceCodeKind.Script);
-
-    
-
-    _isLoading = false;
+    return documentText;
   }
 
   private void ResultDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
@@ -154,7 +159,7 @@ using (var session = RavenHelper.GetSession(SelectedRavenStore))
   public void SaveCode() {
     if (string.IsNullOrEmpty(_document.FullPathAndName)) {
 
-      var dlg = new InputStringDialog() {
+      var dlg = new SaveScriptDialog() {
         Heading = "Enter filename"
       };
 
@@ -162,8 +167,17 @@ using (var session = RavenHelper.GetSession(SelectedRavenStore))
 
       var result = dlg.ShowDialog();
       if (result ?? false && !string.IsNullOrEmpty(dlg.Value)) {
-        var script = ScriptFileService.SaveScript(CodeEditor.Text, dlg.Value, DbType.RavenDb);
-        DocumentTitle = script.Name;
+        if (dlg.SaveAsTemplate) {
+          var savedTemplate = TemplateService.SaveTemplateScript(dlg.Value, CodeEditor.Text, DbType.RavenDb, dlg.UseAsDefaultTemplate);
+          if (savedTemplate != null) {
+            DocumentTitle = savedTemplate.DisplayName;
+          }
+        }
+        else {
+          var script = ScriptFileService.SaveScript(CodeEditor.Text, dlg.Value, DbType.RavenDb);
+          DocumentTitle = script.Name;
+        }
+        
       }
     }
     else {
@@ -174,6 +188,19 @@ using (var session = RavenHelper.GetSession(SelectedRavenStore))
 
   public void SetEditorText(string text) {
     CodeEditor.Text = text;
+  }
+
+  public void UseScriptFile(ScriptFile scriptfile) {
+    CodeEditor.Text = ScriptFileService.ReadScriptFile(scriptfile);
+    DocumentTitle = scriptfile.Name;
+    _document.FullPathAndName = scriptfile.FullPath;
+  }
+
+  public void UseTemplate(ScriptTemplate scriptTemplate) {
+    CodeEditor.Text = TemplateService.ReadTemplate(scriptTemplate);
+    DocumentTitle = scriptTemplate.DisplayName;
+    _document.FullPathAndName = scriptTemplate.Filename;
+    _document.IsTemplate = true;
   }
 
   private void SaveCode(string fullPath) {

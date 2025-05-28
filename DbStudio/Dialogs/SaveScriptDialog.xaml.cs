@@ -10,13 +10,16 @@ namespace DbStudio {
   /// <summary>
   /// Interaction logic for DatasourceDialog.xaml
   /// </summary>
-  public partial class InputStringDialog : Window {
+  public partial class SaveScriptDialog : Window {
 
     public string Value { get; set; }
-    public string Heading { get; set; } = "Enter string";
+    public string Heading { get; set; } = "Enter script name";
+
+    public bool SaveAsTemplate { get; set; }
+    public bool UseAsDefaultTemplate { get; set; }
 
 
-    public InputStringDialog() {
+    public SaveScriptDialog() {
       InitializeComponent();
 
       

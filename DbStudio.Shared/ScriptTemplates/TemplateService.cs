@@ -41,6 +41,33 @@ public class TemplateService {
     File.WriteAllText(TemplatesPath, json);
   }
 
+  public static ScriptTemplate? SaveTemplateScript(string name, string script, DbType dbType, bool isStartup) {
+
+    var templatesFolder = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!,
+                                                     "Templates");
+
+    try {
+      var template = new ScriptTemplate() {
+        DbType = dbType,
+        DisplayName = name,
+        IsStartup = isStartup,
+        Filename = Path.Combine(templatesFolder, dbType.ToString(), name)
+      };
+
+      File.WriteAllText(template.Filename, script);
+
+      // add template to templates
+      var allTemplates = LoadTemplates().ToList();
+      allTemplates.Add(template);
+
+      SaveTemplates(allTemplates);
+      return template;
+    }
+    catch { }
+
+    return null;
+  }
+
   public static string ReadTemplate(ScriptTemplate template) {
     var filePath = GetTemplateFullPath(template);
 
