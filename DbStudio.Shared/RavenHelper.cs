@@ -24,6 +24,7 @@ public static class RavenHelper {
         Urls = new[] { ravenStore.Url }
       };
 
+      AddCertificate(store, ravenStore);
       store.Initialize();
       return store;
     }
@@ -39,17 +40,20 @@ public static class RavenHelper {
         Database = ravenStore.Database.Name,
       };
 
-      if (!string.IsNullOrEmpty(ravenStore.CertificatePath)) {
-        var cert = new X509Certificate2(ravenStore.CertificatePath, PasswordProtector.DecryptPassword(ravenStore.Password));
-        //var cert = System.Security.Cryptography.X509Certificates.X509CertificateLoader.LoadCertificateFromFile(_ravenStore.CertificatePath);
-        store.Certificate = cert;
-      }
+      AddCertificate(store, ravenStore);
 
       store.Initialize();
 
       _stores[key] = store;
 
       return store;
+    }
+  }
+
+  private static void AddCertificate(DocumentStore store, RavenStore ravenStore) {
+    if (!string.IsNullOrEmpty(ravenStore.CertificatePath)) {
+      var cert = new X509Certificate2(ravenStore.CertificatePath, PasswordProtector.DecryptPassword(ravenStore.Password));
+      store.Certificate = cert;
     }
   }
 
