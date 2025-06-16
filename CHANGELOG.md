@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="0.3.3"></a>
+## [0.3.3](https://www.github.com/moonstance/Db-studio/releases/tag/v0.3.3) (2025-06-16)
+
+### Bug Fixes
+
+* Always add cert to store if present ([e0cb052](https://www.github.com/moonstance/Db-studio/commit/e0cb052c293d09bf9f2f6d00e4fe63e3fa888bab))
+
 <a name="0.3.2"></a>
 ## [0.3.2](https://www.github.com/moonstance/Db-studio/releases/tag/v0.3.2) (2025-05-28)
 
